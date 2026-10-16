@@ -26,7 +26,7 @@ Vocalis is still an evolving project. These principles are engineering goals, no
 
 Ultimately, Vocalis isn't about making the most complicated audio software. It's about making useful tools that Linux podcasters, video producers, streamers and other creators can rely on.
 
-**Because the best plugin isn't always the one that does the most. Sometimes, it's the one that does what you need—and keeps doing it.**
+**Because the best plugin isn't always the one that does the most. Sometimes, it's the one that does what you need and keeps doing it.**
 
 ### Author & Development
 
