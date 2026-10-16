@@ -1,0 +1,13 @@
+[0/2] Re-checking globbed directories...
+[1/2] Re-running CMake...
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Testing juceaide
+-- Finished setting up juceaide
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/enos/AudioDevelopment/VocalisVoice/build/Debug
+[0/2] Re-checking globbed directories...
+[1/2] Building CXX object CMakeFiles/GuiTests.dir/tests/GuiTests.cpp.o
+[2/2] Linking CXX executable GuiTests

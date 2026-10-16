@@ -1,0 +1,18 @@
+Internal ctest changing into directory: /home/enos/AudioDevelopment/VocalisVoice/build/Release
+Test project /home/enos/AudioDevelopment/VocalisVoice/build/Release
+    Start 1: voice_tests
+1/6 Test #1: voice_tests ......................   Passed    0.14 sec
+    Start 2: dsp_tests
+2/6 Test #2: dsp_tests ........................   Passed    0.41 sec
+    Start 3: gui_tests
+3/6 Test #3: gui_tests ........................   Passed    0.33 sec
+    Start 4: design_parity
+4/6 Test #4: design_parity ....................   Passed    0.13 sec
+    Start 5: audit_dsp_tests
+5/6 Test #5: audit_dsp_tests ..................   Passed    0.23 sec
+    Start 6: thread_stress
+6/6 Test #6: thread_stress ....................   Passed    0.17 sec
+
+100% tests passed, 0 tests failed out of 6
+
+Total Test time (real) =   1.40 sec

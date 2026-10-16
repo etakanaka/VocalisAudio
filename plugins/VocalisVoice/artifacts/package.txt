@@ -1,0 +1,2 @@
+/home/enos/AudioDevelopment/VocalisVoice/dist/VocalisVoice-1.0.0-linux-x86_64.tar.gz
+SHA256 1229d1145f35f8d30085761c46b6942cc063919eddb1cab0a34c0107dade6abc

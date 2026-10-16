@@ -1,0 +1,13 @@
+Installed: /tmp/vocalis-voice-installer-hck_trr4/Vocalis Voice.vst3
+Previous Voice bundle retained: /tmp/vocalis-voice-installer-hck_trr4/Vocalis Voice.vst3.backup-20261016080631-29
+Installed: /tmp/vocalis-voice-installer-hck_trr4/Vocalis Voice.vst3
+Previous Voice bundle retained: /tmp/vocalis-voice-installer-hck_trr4/Vocalis Voice.vst3.backup-20261016080631-39
+Installed: /tmp/vocalis-voice-installer-hck_trr4/Vocalis Voice.vst3
+Removed: /tmp/vocalis-voice-installer-hck_trr4/Vocalis Voice.vst3 (backups and other plugins retained)
+Refusing to remove an unmarked bundle.
+Existing unmarked bundle is not identifiable as Vocalis Voice; refusing replacement.
+Refusing to delete a symlink.
+Refusing to replace a symlink.
+PASS install hash / reinstall backup / uninstall / unmarked and symlink protection / Rider untouched
+
+VERIFIED PASS: final archive source hashes, binary hash, reports, installer/uninstaller/upgrades/protections

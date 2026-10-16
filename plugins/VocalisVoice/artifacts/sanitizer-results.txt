@@ -1,0 +1,29 @@
+PASS Silence / all paths
+PASS Low-level input
+PASS High-level / no uncontrolled boost
+PASS Input gain accuracy
+PASS Output gain accuracy
+PASS Intensity 0
+PASS Intensity 25
+PASS Intensity 50
+PASS Intensity 75
+PASS Intensity 100
+PASS Compressor static curve / soft knee / stereo linking
+PASS Gain reduction meter equals actual dynamics
+PASS Low-frequency cleanup
+PASS Presence enhancement / bright guard
+PASS Delay timing and feedback
+PASS Parallel activation / isolation 0
+PASS Parallel activation / isolation 1
+PASS Parallel activation / isolation 2
+PASS Doubler stereo decorrelation / mono compatibility
+PASS Reverb pre-delay / decaying diffuse tail
+PASS Smooth effect / bypass transitions
+PASS Layout 1 to 1
+PASS Layout 1 to 2
+PASS Layout 2 to 2
+PASS Rapid automation / rate / block matrix / finite guard
+PASS Repeated prepare / instantiation
+PASS Audio-thread allocation guard
+PASS Sensitivity hysteresis / clipping hold
+28 passed, 0 failed; allocations in audio=0

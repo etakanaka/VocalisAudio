@@ -1,0 +1,9 @@
+Installed: /tmp/vocalis-voice-installer-pc6j747h/Vocalis Voice.vst3
+Previous Voice bundle retained: /tmp/vocalis-voice-installer-pc6j747h/Vocalis Voice.vst3.backup-20261016071654-13
+Installed: /tmp/vocalis-voice-installer-pc6j747h/Vocalis Voice.vst3
+Removed: /tmp/vocalis-voice-installer-pc6j747h/Vocalis Voice.vst3 (backups and other plugins retained)
+Refusing to remove an unmarked bundle.
+Existing unmarked Vocalis Voice bundle; move it aside before installing.
+Refusing to delete a symlink.
+Refusing to replace a symlink.
+PASS install hash / reinstall backup / uninstall / unmarked and symlink protection / Rider untouched

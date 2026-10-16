@@ -1,0 +1,6 @@
+[0/2] Re-checking globbed directories...
+[1/1] Building VST3 manifest helper for VocalisVoice
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/enos/AudioDevelopment/VocalisVoice/build/Release/vst3_helpers/VocalisVoice
+ninja: no work to do.

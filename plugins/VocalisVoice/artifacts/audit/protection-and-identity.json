@@ -1,0 +1,12 @@
+{
+  "rider_files_hashed": 163,
+  "rider_files_changed": [],
+  "unchanged_parameter_and_preset_files": {
+    "src/state/Parameters.h": true,
+    "src/state/PresetManager.h": true
+  },
+  "vst3_cids_preserved": true,
+  "dsp_files_changed": [
+    "src/dsp/VocalDelay.h"
+  ]
+}

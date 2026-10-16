@@ -1,0 +1,60 @@
+=================================================================
+==9==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x52e00000b820 at pc 0x59107d291919 bp 0x7fff676e3d50 sp 0x7fff676e3d40
+READ of size 4 at 0x52e00000b820 thread T0
+    #0 0x59107d291918 in vocalis::DelayLine::read(float) const src/dsp/VocalDelay.h:22
+    #1 0x59107d291516 in main /tmp/voice-boundary-repro.cpp:2
+    #2 0x7e2d2e22a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7e2d2e22a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x59107d2912e4 in _start (/tmp/voice-boundary-repro+0x12e4) (BuildId: 21f16b097e32ee917a153dc3fe184f07042f3bf3)
+
+0x52e00000b820 is located 0 bytes after 46112-byte region [0x52e000000400,0x52e00000b820)
+allocated by thread T0 here:
+    #0 0x7e2d2eafe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x59107d293ad9 in std::__new_allocator<float>::allocate(unsigned long, void const*) /usr/include/c++/13/bits/new_allocator.h:151
+    #2 0x59107d293865 in std::allocator<float>::allocate(unsigned long) /usr/include/c++/13/bits/allocator.h:198
+    #3 0x59107d293865 in std::allocator_traits<std::allocator<float> >::allocate(std::allocator<float>&, unsigned long) /usr/include/c++/13/bits/alloc_traits.h:482
+    #4 0x59107d293865 in std::_Vector_base<float, std::allocator<float> >::_M_allocate(unsigned long) /usr/include/c++/13/bits/stl_vector.h:381
+    #5 0x59107d293212 in std::_Vector_base<float, std::allocator<float> >::_M_create_storage(unsigned long) /usr/include/c++/13/bits/stl_vector.h:398
+    #6 0x59107d292b2e in std::_Vector_base<float, std::allocator<float> >::_Vector_base(unsigned long, std::allocator<float> const&) /usr/include/c++/13/bits/stl_vector.h:335
+    #7 0x59107d29210a in std::vector<float, std::allocator<float> >::vector(unsigned long, float const&, std::allocator<float> const&) /usr/include/c++/13/bits/stl_vector.h:571
+    #8 0x59107d291dbb in std::vector<float, std::allocator<float> >::_M_fill_assign(unsigned long, float const&) /usr/include/c++/13/bits/vector.tcc:275
+    #9 0x59107d291ac4 in std::vector<float, std::allocator<float> >::assign(unsigned long, float const&) /usr/include/c++/13/bits/stl_vector.h:809
+    #10 0x59107d291749 in vocalis::DelayLine::prepare(int) src/dsp/VocalDelay.h:12
+    #11 0x59107d2914c6 in main /tmp/voice-boundary-repro.cpp:2
+    #12 0x7e2d2e22a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #13 0x7e2d2e22a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #14 0x59107d2912e4 in _start (/tmp/voice-boundary-repro+0x12e4) (BuildId: 21f16b097e32ee917a153dc3fe184f07042f3bf3)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow src/dsp/VocalDelay.h:22 in vocalis::DelayLine::read(float) const
+Shadow bytes around the buggy address:
+  0x52e00000b580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x52e00000b600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x52e00000b680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x52e00000b700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x52e00000b780: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x52e00000b800: 00 00 00 00[fa]fa fa fa fa fa fa fa fa fa fa fa
+  0x52e00000b880: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x52e00000b900: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x52e00000b980: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x52e00000ba00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x52e00000ba80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==9==ABORTING

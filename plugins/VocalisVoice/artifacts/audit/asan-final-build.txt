@@ -1,0 +1,6 @@
+[0/2] Re-checking globbed directories...
+[1/5] Building CXX object CMakeFiles/GuiTests.dir/tests/GuiTests.cpp.o
+[2/5] Building CXX object CMakeFiles/VocalisVoice.dir/src/PluginEditor.cpp.o
+[3/5] Linking CXX static library "VocalisVoice_artefacts/RelWithDebInfo/libVocalis Voice_SharedCode.a"
+[4/5] Linking CXX executable GuiTests
+[5/5] Linking CXX executable VoiceTests

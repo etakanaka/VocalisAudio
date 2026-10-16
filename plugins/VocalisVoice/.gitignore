@@ -1,0 +1,5 @@
+build/
+dist/
+*.wav
+checkpoints/
+artifacts/audit/*.f32

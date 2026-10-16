@@ -1,0 +1,15 @@
+[0/2] Re-checking globbed directories...
+[1/8] Linking CXX executable DesignParity
+[2/8] Linking CXX executable AudioRegression
+[3/8] Building VST3 manifest helper for VocalisVoice
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/enos/AudioDevelopment/VocalisVoice/build/Release/vst3_helpers/VocalisVoice
+ninja: no work to do.
+[4/8] Linking CXX shared module "VocalisVoice_artefacts/Release/VST3/Vocalis Voice.vst3/Contents/x86_64-linux/Vocalis Voice.so"
+removing moduleinfo.json
+creating /home/enos/AudioDevelopment/VocalisVoice/build/Release/VocalisVoice_artefacts/Release/VST3/Vocalis Voice.vst3/Contents/Resources/moduleinfo.json
+[5/8] Building CXX object CMakeFiles/AuditDspTests.dir/tests/AuditDspTests.cpp.o
+[6/8] Linking CXX executable AuditDspTests
+[7/8] Building CXX object CMakeFiles/ThreadStress.dir/tests/ThreadStress.cpp.o
+[8/8] Linking CXX executable ThreadStress

@@ -1,0 +1,7 @@
+PASS Fractional wrap rounding boundary
+PASS Compressor detector / attack / release time constants
+PASS Meter RMS, peak decay and clip hold calibration
+PASS Harmonic late engagement, symmetry and third harmonic
+PASS Block-size independence and denormal decay
+PASS Syllabic / singing-like / noisy / transient fixtures at rates and variable blocks
+6 audit DSP suites passed

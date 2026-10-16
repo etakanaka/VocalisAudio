@@ -1,0 +1,19 @@
+PASS VST3 discovery: Vocalis Voice id=VST3-Vocalis Voice-4ca0aaaa-1ae896dc
+HOST PARAM Input Gain value=0.5
+HOST PARAM Intensity value=0.5
+HOST PARAM Delay Enable value=0
+HOST PARAM Delay Level value=0
+HOST PARAM Doubler Enable value=1
+HOST PARAM Doubler Level value=0.623333
+HOST PARAM Reverb Enable value=1
+HOST PARAM Reverb Level value=0.623333
+HOST PARAM Output Gain value=0.5
+HOST PARAM Bypass value=0
+HOST PARAM Program value=0
+PASS VST3 host parameters: 11
+PASS VST3 processing layout 1 -> 1 (editor closed)
+PASS VST3 processing layout 1 -> 2 (editor closed)
+PASS VST3 processing layout 2 -> 2 (editor closed)
+PASS VST3 automation and state roundtrip
+UNVERIFIED VST3 native editor attachment: XOpenDisplay failed; use GuiTests for the compiled editor render
+PASS VST3 repeated load/unload

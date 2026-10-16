@@ -1,0 +1,16 @@
+# GUI redesign baseline — 2026-10-16
+
+Inspection before implementation: no Git repository exists in the project or its parent hierarchy; there is therefore no baseline commit. No history was reset or replaced. Full project (including all uncommitted files, reference, build output and artifacts) was archived and separately hashed at `/home/enos/AudioDevelopment/VocalisRider-checkpoints/gui-baseline-20261016-060436/project.tar.gz`. The directory also contains a complete file SHA-256 manifest and a separate copy of the installed original VST3. Extract to a separate directory to inspect/restore; do not extract over later work without preserving it first.
+
+- DSP: `Source/Engine.h` contains detector and gain algorithms. `Source/Plugin.cpp` contains callbacks, bus layout, parameters, capture, host notifications, presets and XML persistence. `Source/Plugin.h` declares processor interfaces and atomic meters.
+- GUI: all original rendering, LookAndFeel, control creation/layout, Range interaction, editor timer, buttons and APVTS attachments reside in `Source/Editor.cpp`, including `createEditor()`.
+- IDs: target, spill, vocal, music, rangeMin, rangeMax, idle, rider, output, attack, automation, bypass, preset. Definitions/defaults/ranges and version-1 ParameterIDs are in Plugin.cpp. GUI sliders use APVTS attachments; custom range/buttons use existing processor setters; preset menu calls setCurrentProgram.
+- Automation: processor-owned 50 Hz message-thread timer publishes Rider in Write, ends gestures outside Write. Read uses host Rider; Off rides without moving parameter notifications. CSV is separate volatile capture. No automation semantics will be altered.
+- State/presets: APVTS tree `Vocalis`, XML/binary serialization; eight fixed preset tables and a persisted preset label. GUI has preset selection, not a pre-existing user-preset save dialog; host state saving is preserved.
+- Meters: lock-free atomic input RMS, peak, music RMS, Rider gain and activity published by callback; 30 Hz GUI polling. There is no measured output-level meter. The reference's OUT meter will therefore be adapted to the existing measured MUSIC sidechain signal, labelled accurately, without inventing measurements or changing processor code.
+- Build: existing C++20 CMake/Ninja Release, local JUCE, VST3 identity Vcls/VrLv and product Vocalis Rider Live. Existing Standalone target retained without changes; this task builds/tests VST3 only.
+- Baseline build current; CTest 3/3 passed, 144 checks (82 DSP, 36 integration, 26 native VST3), zero failures. Logs: artifacts/gui-redesign/baseline-build.log and baseline-tests.log. Original actual editor captured in baseline-editor.png.
+
+Safe production change boundary: Source/Editor.cpp only. Add verification artifacts/documentation outside production sources. No DSP, processor header, callback, parameters, metadata, CMake, existing tests, scripts or serialization changes planned. Known pre-existing issues in POST_BUILD_VERIFICATION.md are intentionally outside scope.
+
+Reference: Vocalis Leveler Plugin Interface.png, 1254×1254. Square suite design, navy-black gradients, fine blue borders, softly rounded panels, white/light blue typography, violet arcs and illuminated fader strips, yellow target meter. Rider name and all actual controls retained. No reference bitmap will be embedded as a background.

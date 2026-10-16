@@ -1,0 +1,2 @@
+/tmp/VocalisVoice-checkpoint-20261016-073330
+Git status failed: restricted .git directory is not a repository. Full workspace.tar contains all accessible pre-existing files.

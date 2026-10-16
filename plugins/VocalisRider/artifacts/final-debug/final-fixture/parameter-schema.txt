@@ -1,0 +1,13 @@
+target|Target|-42|0|0.1|0.5
+spill|Spill|-48|-12|0.1|0
+vocal|Vocal sensitivity|-12|12|0.1|0.5
+music|Music sensitivity|-12|12|0.1|0.5
+rangeMin|Range minimum|-12|11|0.1|0.26087
+rangeMax|Range maximum|-11|12|0.1|0.73913
+idle|Idle|-12|12|0.1|0.5
+rider|Rider|-12|12|0.1|0.5
+output|Output|-12|12|0.1|0.5
+attack|Attack|0|1|1|0
+automation|Automation|0|2|1|0
+bypass|Bypass|0|1|1|0
+preset|Preset label|0|7|1|0

@@ -1,0 +1,11 @@
+{
+  "cases": 30,
+  "mean_cpu_percent_min": 0.190662,
+  "mean_cpu_percent_max": 0.916701,
+  "worst_observed_us": 96.602,
+  "worst_deadline_percent": 57.9612,
+  "average_relative_time": 0.887001954160132,
+  "zero_alloc_all": true,
+  "finite_all": true,
+  "zero_latency_all": true
+}

@@ -1,0 +1,20 @@
+{
+  "styling_only": {
+    "samples": 5255600,
+    "different_samples": 0,
+    "max_absolute_error": 0.0,
+    "rms_error": 0.0,
+    "baseline_sha256": "b4ba52654f1adf73488eb4720520224158eb6d9a739c07f3a3ea6a19ff34afda",
+    "output_sha256": "b4ba52654f1adf73488eb4720520224158eb6d9a739c07f3a3ea6a19ff34afda",
+    "tolerance": 0.0
+  },
+  "final_fixes": {
+    "samples": 5255600,
+    "different_samples": 0,
+    "max_absolute_error": 0.0,
+    "rms_error": 0.0,
+    "baseline_sha256": "b4ba52654f1adf73488eb4720520224158eb6d9a739c07f3a3ea6a19ff34afda",
+    "output_sha256": "b4ba52654f1adf73488eb4720520224158eb6d9a739c07f3a3ea6a19ff34afda",
+    "tolerance": 0.0
+  }
+}

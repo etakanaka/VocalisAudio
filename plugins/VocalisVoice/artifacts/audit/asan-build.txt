@@ -1,0 +1,78 @@
+[0/2] Re-checking globbed directories...
+[1/64] Building CXX object CMakeFiles/VocalisVoice.dir/src/PluginProcessor.cpp.o
+[2/64] Building CXX object CMakeFiles/VocalisVoice.dir/src/PluginEditor.cpp.o
+[3/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_processors/juce_audio_processors.cpp.o
+[4/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_gui_extra/juce_gui_extra.cpp.o
+[5/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_gui_basics/juce_gui_basics_2.cpp.o
+[6/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_gui_basics/juce_gui_basics.cpp.o
+[7/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_gui_basics/juce_gui_basics_4.cpp.o
+[8/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_gui_basics/juce_gui_basics_3.cpp.o
+[9/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_gui_basics/juce_gui_basics_5.cpp.o
+[10/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
+[11/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libjpg_1.c.o
+[12/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libjpg_2.c.o
+[13/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libjpg_3.c.o
+[14/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libpng.c.o
+[15/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dec.c.o
+[16/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dsp_dec.c.o
+[17/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dsp_dec_avx2.c.o
+[18/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dsp_dec_sse41.c.o
+[19/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dsp_enc.c.o
+[20/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dsp_enc_avx2.c.o
+[21/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_dsp_enc_sse41.c.o
+[22/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_enc.c.o
+[23/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_sharpyuv.c.o
+[24/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_libwebp_utils.c.o
+[25/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_lunasvg.c.o
+[26/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_events/juce_events.cpp.o
+[27/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
+[28/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
+[29/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_core/juce_core_zlib.c.o
+[30/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_core/juce_core.cpp.o
+[31/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_data_structures/juce_data_structures.cpp.o
+[32/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
+[33/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
+[34/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_graphics/juce_graphics.cpp.o
+[35/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.cpp.o
+[36/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_basics/juce_audio_basics.cpp.o
+[37/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_utils/juce_audio_utils.cpp.o
+[38/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_formats/juce_audio_formats_flac_1.c.o
+[39/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_formats/juce_audio_formats_ogg.c.o
+[40/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_formats/juce_audio_formats_flac_2.c.o
+[41/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_formats/juce_audio_formats_opusfile.c.o
+[42/64] Building C object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_formats/juce_audio_formats_opus.c.o
+[43/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_formats/juce_audio_formats.cpp.o
+[44/64] Building CXX object CMakeFiles/VoiceTests.dir/tests/VoiceTests.cpp.o
+[45/64] Building CXX object CMakeFiles/GuiTests.dir/tests/GuiTests.cpp.o
+[46/64] Building CXX object CMakeFiles/AuditDspTests.dir/tests/AuditDspTests.cpp.o
+[47/64] Linking CXX executable AuditDspTests
+[48/64] Building CXX object CMakeFiles/ThreadStress.dir/tests/ThreadStress.cpp.o
+[49/64] Building VST3 manifest helper for VocalisVoice
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/enos/AudioDevelopment/VocalisVoice/build/ASan/vst3_helpers/VocalisVoice
+[1/2] Building CXX object CMakeFiles/vst3_helper.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/VST3/juce_VST3ManifestHelper.cpp.o
+[2/2] Linking CXX executable vst3_helper
+[50/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX.cpp.o
+[51/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_AAX_utils.cpp.o
+[52/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_ARA.cpp.o
+[53/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_LV2.cpp.o
+[54/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Standalone.cpp.o
+[55/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_Unity.cpp.o
+[56/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST2.cpp.o
+[57/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_devices/juce_audio_devices.cpp.o
+[58/64] Building CXX object CMakeFiles/VocalisVoice.dir/home/enos/AudioDevelopment/JUCE/modules/juce_dsp/juce_dsp.cpp.o
+[59/64] Linking CXX static library "VocalisVoice_artefacts/RelWithDebInfo/libVocalis Voice_SharedCode.a"
+[60/64] Linking CXX executable GuiTests
+[61/64] Linking CXX executable VoiceTests
+[62/64] Linking CXX executable ThreadStress
+[63/64] Building CXX object CMakeFiles/VocalisVoice_VST3.dir/home/enos/AudioDevelopment/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp.o
+[64/64] Linking CXX shared module "VocalisVoice_artefacts/RelWithDebInfo/VST3/Vocalis Voice.vst3/Contents/x86_64-linux/Vocalis Voice.so"
+removing moduleinfo.json
+creating /home/enos/AudioDevelopment/VocalisVoice/build/ASan/VocalisVoice_artefacts/RelWithDebInfo/VST3/Vocalis Voice.vst3/Contents/Resources/moduleinfo.json

@@ -1,0 +1,18 @@
+[0/2] Re-checking globbed directories...
+[1/11] Building CXX object CMakeFiles/Vst3Probe.dir/tests/Vst3Probe.cpp.o
+[2/11] Building CXX object CMakeFiles/GuiTests.dir/tests/GuiTests.cpp.o
+[3/11] Linking CXX executable Vst3Probe_artefacts/Release/Vst3Probe
+[4/11] Building VST3 manifest helper for VocalisVoice
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/enos/AudioDevelopment/VocalisVoice/build/Release/vst3_helpers/VocalisVoice
+ninja: no work to do.
+[5/11] Building CXX object CMakeFiles/VocalisVoice.dir/src/PluginEditor.cpp.o
+[6/11] Linking CXX static library "VocalisVoice_artefacts/Release/libVocalis Voice_SharedCode.a"
+[7/11] Linking CXX executable VoiceTests
+[8/11] Linking CXX shared module "VocalisVoice_artefacts/Release/VST3/Vocalis Voice.vst3/Contents/x86_64-linux/Vocalis Voice.so"
+removing moduleinfo.json
+creating /home/enos/AudioDevelopment/VocalisVoice/build/Release/VocalisVoice_artefacts/Release/VST3/Vocalis Voice.vst3/Contents/Resources/moduleinfo.json
+[9/11] Linking CXX executable GuiTests
+[10/11] Building CXX object CMakeFiles/AudioRegression.dir/tests/AudioRegression.cpp.o
+[11/11] Linking CXX executable AudioRegression

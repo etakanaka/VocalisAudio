@@ -1,0 +1,1 @@
+mktemp: failed to create directory via template ‘/home/enos/.vst3/.vocalis-voice-install.XXXXXXXX’: Read-only file system

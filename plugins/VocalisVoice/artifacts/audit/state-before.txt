@@ -1,0 +1,8 @@
+PASS Stable parameters and defaults
+PASS Factory presets / trim preservation
+PASS Plugin state roundtrip / all ten parameters
+PASS Real processor bus layouts and closed editor processing
+PASS Host bypass / resume
+PASS Repeated plugin creation and state restore
+FAIL Corrupt state rejection is atomic: corrupt state partially applied
+6 passed, 1 failed

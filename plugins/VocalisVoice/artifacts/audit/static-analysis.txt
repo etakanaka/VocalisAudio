@@ -1,0 +1,722 @@
+tests/AuditDspTests.cpp: In lambda function:
+tests/AuditDspTests.cpp:30:28: warning: dereference of possibly-NULL ‘d.vocalis::DelayLine::data.std::vector<float>::<anonymous>.std::_Vector_base<float, std::allocator<float> >::_M_impl.std::_Vector_base<float, std::allocator<float> >::_Vector_impl::<anonymous>.std::_Vector_base<float, std::allocator<float> >::_Vector_impl_data::_M_start’ [CWE-690] [-Wanalyzer-possible-null-dereference]
+   30 |                  d.data[0] = .5f;
+  ‘int main()’: events 1-2
+    |
+    |   13 | int main()
+    |      |     ^~~~
+    |      |     |
+    |      |     (1) entry to ‘main’
+    |......
+    |   24 |         test("Fractional wrap rounding boundary",
+    |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |      |             |
+    |      |             (2) calling ‘main()::<lambda(const char*, auto:19)>’ from ‘main’
+    |   25 |              []
+    |      |              ~~
+    |   26 |              {
+    |      |              ~
+    |   27 |                  DelayLine d;
+    |      |                  ~~~~~~~~~~~~
+    |   28 |                  d.prepare(11528);
+    |      |                  ~~~~~~~~~~~~~~~~~
+    |   29 |                  d.pos = 5000;
+    |      |                  ~~~~~~~~~~~~~
+    |   30 |                  d.data[0] = .5f;
+    |      |                  ~~~~~~~~~~~~~~~~
+    |   31 |                  d.data.back() = .25f;
+    |      |                  ~~~~~~~~~~~~~~~~~~~~~
+    |   32 |                  float y = d.read(5000.00048828125f);
+    |      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |   33 |                  require(std::isfinite(y) && std::abs(y - .5f) < .001f,
+    |      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |   34 |                          "wrap rounded to one past end");
+    |      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |   35 |              });
+    |      |              ~~
+    |
+    +--> ‘main()::<lambda(const char*, auto:19)> [with auto:19 = main()::<lambda()>]’: events 3-4
+           |
+           |   16 |     auto test = [&](const char *name, auto fn)
+           |      |                 ^
+           |      |                 |
+           |      |                 (3) entry to ‘main()::<lambda(const char*, auto:19)>’
+           |   17 |     {
+           |   18 |         fn();
+           |      |         ~~~~     
+           |      |           |
+           |      |           (4) calling ‘main()::<lambda()>’ from ‘main()::<lambda(const char*, auto:19)>’
+           |
+           +--> ‘main()::<lambda()>’: events 5-6
+                  |
+                  |   25 |              []
+                  |      |              ^
+                  |      |              |
+                  |      |              (5) entry to ‘main()::<lambda()>’
+                  |......
+                  |   28 |                  d.prepare(11528);
+                  |      |                  ~~~~~~~~~~~~~~~~
+                  |      |                           |
+                  |      |                           (6) calling ‘vocalis::DelayLine::prepare’ from ‘main()::<lambda()>’
+                  |
+                  +--> ‘void vocalis::DelayLine::prepare(int)’: events 7-8
+                         |
+                         |src/dsp/VocalDelay.h:10:10:
+                         |   10 |     void prepare(int n)
+                         |      |          ^~~~~~~
+                         |      |          |
+                         |      |          (7) entry to ‘vocalis::DelayLine::prepare’
+                         |   11 |     {
+                         |   12 |         data.assign(size_t(n), 0);
+                         |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~
+                         |      |                    |
+                         |      |                    (8) calling ‘std::vector<float>::assign’ from ‘vocalis::DelayLine::prepare’
+                         |
+                         +--> ‘constexpr void std::vector<_Tp, _Alloc>::assign(size_type, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 9-10
+                                |
+                                |/usr/include/c++/13/bits/stl_vector.h:808:7:
+                                |  808 |       assign(size_type __n, const value_type& __val)
+                                |      |       ^~~~~~
+                                |      |       |
+                                |      |       (9) entry to ‘std::vector<float>::assign’
+                                |  809 |       { _M_fill_assign(__n, __val); }
+                                |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                |      |                       |
+                                |      |                       (10) calling ‘std::vector<float>::_M_fill_assign’ from ‘std::vector<float>::assign’
+                                |
+                                +--> ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 11-14
+                                       |
+                                       |/usr/include/c++/13/bits/vector.tcc:270:5:
+                                       |  270 |     vector<_Tp, _Alloc>::
+                                       |      |     ^~~~~~~~~~~~~~~~~~~
+                                       |      |     |
+                                       |      |     (11) entry to ‘std::vector<float>::_M_fill_assign’
+                                       |......
+                                       |  273 |       if (__n > capacity())
+                                       |      |       ~~
+                                       |      |       |
+                                       |      |       (12) following ‘true’ branch...
+                                       |  274 |         {
+                                       |  275 |           vector __tmp(__n, __val, _M_get_Tp_allocator());
+                                       |      |                  ~~~~~             ~~~~~~~~~~~~~~~~~~~~~
+                                       |      |                  |                                    |
+                                       |      |                  |                                    (13) ...to here
+                                       |      |                  (14) calling ‘std::vector<float>::vector’ from ‘std::vector<float>::_M_fill_assign’
+                                       |
+                                       +--> ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 15-16
+                                              |
+                                              |/usr/include/c++/13/bits/stl_vector.h:569:7:
+                                              |  569 |       vector(size_type __n, const value_type& __value,
+                                              |      |       ^~~~~~
+                                              |      |       |
+                                              |      |       (15) entry to ‘std::vector<float>::vector’
+                                              |  570 |              const allocator_type& __a = allocator_type())
+                                              |  571 |       : _Base(_S_check_init_len(__n, __a), __a)
+                                              |      |                                               ~
+                                              |      |                                               |
+                                              |      |                                               (16) calling ‘std::vector<float>::_S_check_init_len’ from ‘std::vector<float>::vector’
+                                              |
+                                              +--> ‘static constexpr std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::_S_check_init_len(size_type, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 17-18
+                                                     |
+                                                     | 1907 |       _S_check_init_len(size_type __n, const allocator_type& __a)
+                                                     |      |       ^~~~~~~~~~~~~~~~~
+                                                     |      |       |
+                                                     |      |       (17) entry to ‘std::vector<float>::_S_check_init_len’
+                                                     | 1908 |       {
+                                                     | 1909 |         if (__n > _S_max_size(_Tp_alloc_type(__a)))
+                                                     |      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |      |                              |
+                                                     |      |                              (18) calling ‘std::vector<float>::_S_max_size’ from ‘std::vector<float>::_S_check_init_len’
+                                                     |
+                                                     +--> ‘static constexpr std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::_S_max_size(const _Tp_alloc_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 19-20
+                                                            |
+                                                            | 1916 |       _S_max_size(const _Tp_alloc_type& __a) _GLIBCXX_NOEXCEPT
+                                                            |      |       ^~~~~~~~~~~
+                                                            |      |       |
+                                                            |      |       (19) entry to ‘std::vector<float>::_S_max_size’
+                                                            |......
+                                                            | 1924 |         return (std::min)(__diffmax, __allocmax);
+                                                            |      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                            |      |                          |
+                                                            |      |                          (20) calling ‘std::min<long unsigned int>’ from ‘std::vector<float>::_S_max_size’
+                                                            |
+                                                            +--> ‘constexpr const _Tp& std::min(const _Tp&, const _Tp&) [with _Tp = long unsigned int]’: events 21-23
+                                                                   |
+                                                                   |/usr/include/c++/13/bits/stl_algobase.h:233:5:
+                                                                   |  233 |     min(const _Tp& __a, const _Tp& __b)
+                                                                   |      |     ^~~
+                                                                   |      |     |
+                                                                   |      |     (21) entry to ‘std::min<long unsigned int>’
+                                                                   |......
+                                                                   |  238 |       if (__b < __a)
+                                                                   |      |       ~~
+                                                                   |      |       |
+                                                                   |      |       (22) following ‘false’ branch...
+                                                                   |  239 |         return __b;
+                                                                   |  240 |       return __a;
+                                                                   |      |              ~~~
+                                                                   |      |              |
+                                                                   |      |              (23) ...to here
+                                                                   |
+                                                            <------+
+                                                            |
+                                                          ‘static constexpr std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::_S_max_size(const _Tp_alloc_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: event 24
+                                                            |
+                                                            |/usr/include/c++/13/bits/stl_vector.h:1924:26:
+                                                            | 1924 |         return (std::min)(__diffmax, __allocmax);
+                                                            |      |                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+                                                            |      |                          |
+                                                            |      |                          (24) returning to ‘std::vector<float>::_S_max_size’ from ‘std::min<long unsigned int>’
+                                                            |
+                                                     <------+
+                                                     |
+                                                   ‘static constexpr std::vector<_Tp, _Alloc>::size_type std::vector<_Tp, _Alloc>::_S_check_init_len(size_type, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 25-27
+                                                     |
+                                                     | 1909 |         if (__n > _S_max_size(_Tp_alloc_type(__a)))
+                                                     |      |         ~~        ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+                                                     |      |         |                    |
+                                                     |      |         |                    (25) returning to ‘std::vector<float>::_S_check_init_len’ from ‘std::vector<float>::_S_max_size’
+                                                     |      |         (26) following ‘false’ branch...
+                                                     |......
+                                                     | 1912 |         return __n;
+                                                     |      |                ~~~            
+                                                     |      |                |
+                                                     |      |                (27) ...to here
+                                                     |
+                                              <------+
+                                              |
+                                            ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 28-29
+                                              |
+                                              |  571 |       : _Base(_S_check_init_len(__n, __a), __a)
+                                              |      |                                               ^
+                                              |      |                                               |
+                                              |      |                                               (28) returning to ‘std::vector<float>::vector’ from ‘std::vector<float>::_S_check_init_len’
+                                              |      |                                               (29) calling ‘std::_Vector_base<float, std::allocator<float> >::_Vector_base’ from ‘std::vector<float>::vector’
+                                              |
+                                              +--> ‘constexpr std::_Vector_base<_Tp, _Alloc>::_Vector_base(std::size_t, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 30-31
+                                                     |
+                                                     |  333 |       _Vector_base(size_t __n, const allocator_type& __a)
+                                                     |      |       ^~~~~~~~~~~~
+                                                     |      |       |
+                                                     |      |       (30) entry to ‘std::_Vector_base<float, std::allocator<float> >::_Vector_base’
+                                                     |  334 |       : _M_impl(__a)
+                                                     |  335 |       { _M_create_storage(__n); }
+                                                     |      |         ~~~~~~~~~~~~~~~~~~~~~~
+                                                     |      |                          |
+                                                     |      |                          (31) calling ‘std::_Vector_base<float, std::allocator<float> >::_M_create_storage’ from ‘std::_Vector_base<float, std::allocator<float> >::_Vector_base’
+                                                     |
+                                                     +--> ‘constexpr void std::_Vector_base<_Tp, _Alloc>::_M_create_storage(std::size_t) [with _Tp = float; _Alloc = std::allocator<float>]’: events 32-33
+                                                            |
+                                                            |  396 |       _M_create_storage(size_t __n)
+                                                            |      |       ^~~~~~~~~~~~~~~~~
+                                                            |      |       |
+                                                            |      |       (32) entry to ‘std::_Vector_base<float, std::allocator<float> >::_M_create_storage’
+                                                            |  397 |       {
+                                                            |  398 |         this->_M_impl._M_start = this->_M_allocate(__n);
+                                                            |      |                                  ~~~~~~~~~~~~~~~~~~~~~~
+                                                            |      |                                                   |
+                                                            |      |                                                   (33) calling ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_create_storage’
+                                                            |
+                                                            +--> ‘constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = float; _Alloc = std::allocator<float>]’: events 34-37
+                                                                   |
+                                                                   |  378 |       _M_allocate(size_t __n)
+                                                                   |      |       ^~~~~~~~~~~
+                                                                   |      |       |
+                                                                   |      |       (34) entry to ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’
+                                                                   |......
+                                                                   |  381 |         return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+                                                                   |      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                   |      |                         |              ||
+                                                                   |      |                         |              |(36) ...to here
+                                                                   |      |                         |              (37) inlined call to ‘std::allocator_traits<std::allocator<float> >::allocate’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’
+                                                                   |      |                         (35) following ‘true’ branch (when ‘__n != 0’)...
+                                                                   |
+                                                                   +--> ‘static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = float]’: event 38
+                                                                          |
+                                                                          |/usr/include/c++/13/bits/alloc_traits.h:482:28:
+                                                                          |  482 |       { return __a.allocate(__n); }
+                                                                          |      |                            ^
+                                                                          |      |                            |
+                                                                          |      |                            (38) inlined call to ‘std::allocator<float>::allocate’ from ‘std::allocator_traits<std::allocator<float> >::allocate’
+                                                                          |
+                                                                          +--> ‘constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = float]’: events 39-41
+                                                                                 |
+                                                                                 |/usr/include/c++/13/bits/allocator.h:191:9:
+                                                                                 |  191 |         if (std::__is_constant_evaluated())
+                                                                                 |      |         ^~
+                                                                                 |      |         |
+                                                                                 |      |         (39) following ‘false’ branch...
+                                                                                 |......
+                                                                                 |  198 |         return __allocator_base<_Tp>::allocate(__n, 0);
+                                                                                 |      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 |      |                                               |
+                                                                                 |      |                                               (40) ...to here
+                                                                                 |      |                                               (41) calling ‘std::__new_allocator<float>::allocate’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’
+                                                                                 |
+                                                                          <------+
+                                                                          |
+                                                                        ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = float]’: events 42-43
+                                                                          |
+                                                                          |/usr/include/c++/13/bits/new_allocator.h:126:7:
+                                                                          |  126 |       allocate(size_type __n, const void* = static_cast<const void*>(0))
+                                                                          |      |       ^~~~~~~~
+                                                                          |      |       |
+                                                                          |      |       (42) entry to ‘std::__new_allocator<float>::allocate’
+                                                                          |......
+                                                                          |  134 |         if (__builtin_expect(__n > this->_M_max_size(), false))
+                                                                          |      |         ~~
+                                                                          |      |         |
+                                                                          |      |         (43) following ‘false’ branch...
+                                                                          |
+                                                                        ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = float]’: event 44
+                                                                          |
+                                                                          |  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+                                                                          |      |                                                       ^
+                                                                          |      |                                                       |
+                                                                          |      |                                                       (44) ...to here
+                                                                          |
+                                                                        ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = float]’: event 45
+                                                                          |
+                                                                          |  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+                                                                          |      |                                                       ^
+                                                                          |      |                                                       |
+                                                                          |      |                                                       (45) this call could return NULL
+                                                                          |
+                                                                   <------+
+                                                                   |
+                                                                 ‘constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = float; _Alloc = std::allocator<float>]’: event 46
+                                                                   |
+                                                                   |/usr/include/c++/13/bits/stl_vector.h:381:40:
+                                                                   |  381 |         return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+                                                                   |      |                                        ^
+                                                                   |      |                                        |
+                                                                   |      |                                        (46) inlined call to ‘std::allocator_traits<std::allocator<float> >::allocate’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’
+                                                                   |
+                                                                   +--> ‘static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = float]’: event 47
+                                                                          |
+                                                                          |/usr/include/c++/13/bits/alloc_traits.h:482:28:
+                                                                          |  482 |       { return __a.allocate(__n); }
+                                                                          |      |                            ^
+                                                                          |      |                            |
+                                                                          |      |                            (47) inlined call to ‘std::allocator<float>::allocate’ from ‘std::allocator_traits<std::allocator<float> >::allocate’
+                                                                          |
+                                                                          +--> ‘constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = float]’: event 48
+                                                                                 |
+                                                                                 |/usr/include/c++/13/bits/allocator.h:198:47:
+                                                                                 |  198 |         return __allocator_base<_Tp>::allocate(__n, 0);
+                                                                                 |      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+                                                                                 |      |                                               |
+                                                                                 |      |                                               (48) returning to ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’ from ‘std::__new_allocator<float>::allocate’
+                                                                                 |
+                                                            <--------------------+
+                                                            |
+                                                          ‘constexpr void std::_Vector_base<_Tp, _Alloc>::_M_create_storage(std::size_t) [with _Tp = float; _Alloc = std::allocator<float>]’: event 49
+                                                            |
+                                                            |/usr/include/c++/13/bits/stl_vector.h:398:51:
+                                                            |  398 |         this->_M_impl._M_start = this->_M_allocate(__n);
+                                                            |      |                                  ~~~~~~~~~~~~~~~~~^~~~~
+                                                            |      |                                                   |
+                                                            |      |                                                   (49) returning to ‘std::_Vector_base<float, std::allocator<float> >::_M_create_storage’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_allocate’
+                                                            |
+                                                     <------+
+                                                     |
+                                                   ‘constexpr std::_Vector_base<_Tp, _Alloc>::_Vector_base(std::size_t, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: event 50
+                                                     |
+                                                     |  335 |       { _M_create_storage(__n); }
+                                                     |      |         ~~~~~~~~~~~~~~~~~^~~~~
+                                                     |      |                          |
+                                                     |      |                          (50) returning to ‘std::_Vector_base<float, std::allocator<float> >::_Vector_base’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_create_storage’
+                                                     |
+                                              <------+
+                                              |
+                                            ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 51-52
+                                              |
+                                              |  571 |       : _Base(_S_check_init_len(__n, __a), __a)
+                                              |      |                                               ^
+                                              |      |                                               |
+                                              |      |                                               (51) returning to ‘std::vector<float>::vector’ from ‘std::_Vector_base<float, std::allocator<float> >::_Vector_base’
+                                              |  572 |       { _M_fill_initialize(__n, __value); }
+                                              |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       
+                                              |      |                           |
+                                              |      |                           (52) calling ‘std::vector<float>::_M_fill_initialize’ from ‘std::vector<float>::vector’
+                                              |
+                                              +--> ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_initialize(size_type, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 53-54
+                                                     |
+                                                     | 1704 |       _M_fill_initialize(size_type __n, const value_type& __value)
+                                                     |      |       ^~~~~~~~~~~~~~~~~~
+                                                     |      |       |
+                                                     |      |       (53) entry to ‘std::vector<float>::_M_fill_initialize’
+                                                     |......
+                                                     | 1707 |           std::__uninitialized_fill_n_a(this->_M_impl._M_start, __n, __value,
+                                                     |      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |      |                                        |
+                                                     |      |                                        (54) calling ‘std::__uninitialized_fill_n_a<float*, long unsigned int, float, float>’ from ‘std::vector<float>::_M_fill_initialize’
+                                                     | 1708 |                                         _M_get_Tp_allocator());
+                                                     |      |                                         ~~~~~~~~~~~~~~~~~~~~~~
+                                                     |
+                                                     +--> ‘constexpr _ForwardIterator std::__uninitialized_fill_n_a(_ForwardIterator, _Size, const _Tp&, allocator<_Tp2>&) [with _ForwardIterator = float*; _Size = long unsigned int; _Tp = float; _Tp2 = float]’: events 55-58
+                                                            |
+                                                            |/usr/include/c++/13/bits/stl_uninitialized.h:465:5:
+                                                            |  465 |     __uninitialized_fill_n_a(_ForwardIterator __first, _Size __n,
+                                                            |      |     ^~~~~~~~~~~~~~~~~~~~~~~~
+                                                            |      |     |
+                                                            |      |     (55) entry to ‘std::__uninitialized_fill_n_a<float*, long unsigned int, float, float>’
+                                                            |......
+                                                            |  469 |       if (std::is_constant_evaluated())
+                                                            |      |       ~~
+                                                            |      |       |
+                                                            |      |       (56) following ‘false’ branch...
+                                                            |......
+                                                            |  472 |       return std::uninitialized_fill_n(__first, __n, __x);
+                                                            |      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                            |      |                                       |
+                                                            |      |                                       (57) ...to here
+                                                            |      |                                       (58) calling ‘std::uninitialized_fill_n<float*, long unsigned int, float>’ from ‘std::__uninitialized_fill_n_a<float*, long unsigned int, float, float>’
+                                                            |
+                                                            +--> ‘_ForwardIterator std::uninitialized_fill_n(_ForwardIterator, _Size, const _Tp&) [with _ForwardIterator = float*; _Size = long unsigned int; _Tp = float]’: events 59-60
+                                                                   |
+                                                                   |  312 |     uninitialized_fill_n(_ForwardIterator __first, _Size __n, const _Tp& __x)
+                                                                   |      |     ^~~~~~~~~~~~~~~~~~~~
+                                                                   |      |     |
+                                                                   |      |     (59) entry to ‘std::uninitialized_fill_n<float*, long unsigned int, float>’
+                                                                   |......
+                                                                   |  326 |       return __uninitialized_fill_n<__can_fill>::
+                                                                   |      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                   |  327 |         __uninit_fill_n(__first, __n, __x);
+                                                                   |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                   |      |                        |
+                                                                   |      |                        (60) calling ‘std::__uninitialized_fill_n<true>::__uninit_fill_n<float*, long unsigned int, float>’ from ‘std::uninitialized_fill_n<float*, long unsigned int, float>’
+                                                                   |
+                                                                   +--> ‘static _ForwardIterator std::__uninitialized_fill_n<true>::__uninit_fill_n(_ForwardIterator, _Size, const _Tp&) [with _ForwardIterator = float*; _Size = long unsigned int; _Tp = float]’: events 61-62
+                                                                          |
+                                                                          |  292 |         __uninit_fill_n(_ForwardIterator __first, _Size __n,
+                                                                          |      |         ^~~~~~~~~~~~~~~
+                                                                          |      |         |
+                                                                          |      |         (61) entry to ‘std::__uninitialized_fill_n<true>::__uninit_fill_n<float*, long unsigned int, float>’
+                                                                          |  293 |                         const _Tp& __x)
+                                                                          |  294 |         { return std::fill_n(__first, __n, __x); }
+                                                                          |      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                          |      |                             |
+                                                                          |      |                             (62) calling ‘std::fill_n<float*, long unsigned int, float>’ from ‘std::__uninitialized_fill_n<true>::__uninit_fill_n<float*, long unsigned int, float>’
+                                                                          |
+                                                                          +--> ‘constexpr _OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = float*; _Size = long unsigned int; _Tp = float]’: events 63-64
+                                                                                 |
+                                                                                 |/usr/include/c++/13/bits/stl_algobase.h:1152:5:
+                                                                                 | 1152 |     fill_n(_OI __first, _Size __n, const _Tp& __value)
+                                                                                 |      |     ^~~~~~
+                                                                                 |      |     |
+                                                                                 |      |     (63) entry to ‘std::fill_n<float*, long unsigned int, float>’
+                                                                                 |......
+                                                                                 | 1157 |       return std::__fill_n_a(__first, std::__size_to_integer(__n), __value,
+                                                                                 |      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 |      |                             |
+                                                                                 |      |                             (64) calling ‘std::__fill_n_a<float*, long unsigned int, float>’ from ‘std::fill_n<float*, long unsigned int, float>’
+                                                                                 | 1158 |                                std::__iterator_category(__first));
+                                                                                 |      |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 |
+                                                                                 +--> ‘constexpr _OutputIterator std::__fill_n_a(_OutputIterator, _Size, const _Tp&, random_access_iterator_tag) [with _OutputIterator = float*; _Size = long unsigned int; _Tp = float]’: events 65-68
+                                                                                        |
+                                                                                        | 1117 |     __fill_n_a(_OutputIterator __first, _Size __n, const _Tp& __value,
+                                                                                        |      |     ^~~~~~~~~~
+                                                                                        |      |     |
+                                                                                        |      |     (65) entry to ‘std::__fill_n_a<float*, long unsigned int, float>’
+                                                                                        |......
+                                                                                        | 1123 |       if (__n <= 0)
+                                                                                        |      |       ~~
+                                                                                        |      |       |
+                                                                                        |      |       (66) following ‘false’ branch (when ‘__n != 0’)...
+                                                                                        |......
+                                                                                        | 1128 |       std::__fill_a(__first, __first + __n, __value);
+                                                                                        |      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                        |      |                    |                 |
+                                                                                        |      |                    |                 (67) ...to here
+                                                                                        |      |                    (68) calling ‘std::__fill_a<float*, float>’ from ‘std::__fill_n_a<float*, long unsigned int, float>’
+                                                                                        |
+                                                                                        +--> ‘constexpr void std::__fill_a(_FIte, _FIte, const _Tp&) [with _FIte = float*; _Tp = float]’: events 69-70
+                                                                                               |
+                                                                                               |  976 |     __fill_a(_FIte __first, _FIte __last, const _Tp& __value)
+                                                                                               |      |     ^~~~~~~~
+                                                                                               |      |     |
+                                                                                               |      |     (69) entry to ‘std::__fill_a<float*, float>’
+                                                                                               |  977 |     { std::__fill_a1(__first, __last, __value); }
+                                                                                               |      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                               |      |                     |
+                                                                                               |      |                     (70) calling ‘std::__fill_a1<float*, float>’ from ‘std::__fill_a<float*, float>’
+                                                                                               |
+                                                                                               +--> ‘constexpr typename __gnu_cxx::__enable_if<std::__is_scalar<_Tp>::__value, void>::__type std::__fill_a1(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = float*; _Tp = float]’: events 71-73
+                                                                                                      |
+                                                                                                      |  926 |     __fill_a1(_ForwardIterator __first, _ForwardIterator __last,
+                                                                                                      |      |     ^~~~~~~~~
+                                                                                                      |      |     |
+                                                                                                      |      |     (71) entry to ‘std::__fill_a1<float*, float>’
+                                                                                                      |......
+                                                                                                      |  930 |       for (; __first != __last; ++__first)
+                                                                                                      |      |              ~~~~~~~~~~~~~~~~~
+                                                                                                      |      |                      |
+                                                                                                      |      |                      (72) following ‘false’ branch (when ‘__first == __last’)...
+                                                                                                      |  931 |         *__first = __tmp;
+                                                                                                      |  932 |     }
+                                                                                                      |      |     ~
+                                                                                                      |      |     |
+                                                                                                      |      |     (73) ...to here
+                                                                                                      |
+                                                                                               <------+
+                                                                                               |
+                                                                                             ‘constexpr void std::__fill_a(_FIte, _FIte, const _Tp&) [with _FIte = float*; _Tp = float]’: event 74
+                                                                                               |
+                                                                                               |  977 |     { std::__fill_a1(__first, __last, __value); }
+                                                                                               |      |       ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                               |      |                     |
+                                                                                               |      |                     (74) returning to ‘std::__fill_a<float*, float>’ from ‘std::__fill_a1<float*, float>’
+                                                                                               |
+                                                                                        <------+
+                                                                                        |
+                                                                                      ‘constexpr _OutputIterator std::__fill_n_a(_OutputIterator, _Size, const _Tp&, random_access_iterator_tag) [with _OutputIterator = float*; _Size = long unsigned int; _Tp = float]’: event 75
+                                                                                        |
+                                                                                        | 1128 |       std::__fill_a(__first, __first + __n, __value);
+                                                                                        |      |       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                        |      |                    |
+                                                                                        |      |                    (75) returning to ‘std::__fill_n_a<float*, long unsigned int, float>’ from ‘std::__fill_a<float*, float>’
+                                                                                        |
+                                                                                 <------+
+                                                                                 |
+                                                                               ‘constexpr _OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = float*; _Size = long unsigned int; _Tp = float]’: event 76
+                                                                                 |
+                                                                                 | 1157 |       return std::__fill_n_a(__first, std::__size_to_integer(__n), __value,
+                                                                                 |      |              ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 |      |                             |
+                                                                                 |      |                             (76) returning to ‘std::fill_n<float*, long unsigned int, float>’ from ‘std::__fill_n_a<float*, long unsigned int, float>’
+                                                                                 | 1158 |                                std::__iterator_category(__first));
+                                                                                 |      |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                                 |
+                                                                          <------+
+                                                                          |
+                                                                        ‘static _ForwardIterator std::__uninitialized_fill_n<true>::__uninit_fill_n(_ForwardIterator, _Size, const _Tp&) [with _ForwardIterator = float*; _Size = long unsigned int; _Tp = float]’: event 77
+                                                                          |
+                                                                          |/usr/include/c++/13/bits/stl_uninitialized.h:294:29:
+                                                                          |  294 |         { return std::fill_n(__first, __n, __x); }
+                                                                          |      |                  ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+                                                                          |      |                             |
+                                                                          |      |                             (77) returning to ‘std::__uninitialized_fill_n<true>::__uninit_fill_n<float*, long unsigned int, float>’ from ‘std::fill_n<float*, long unsigned int, float>’
+                                                                          |
+                                                                   <------+
+                                                                   |
+                                                                 ‘_ForwardIterator std::uninitialized_fill_n(_ForwardIterator, _Size, const _Tp&) [with _ForwardIterator = float*; _Size = long unsigned int; _Tp = float]’: event 78
+                                                                   |
+                                                                   |  326 |       return __uninitialized_fill_n<__can_fill>::
+                                                                   |      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                   |  327 |         __uninit_fill_n(__first, __n, __x);
+                                                                   |      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+                                                                   |      |                        |
+                                                                   |      |                        (78) returning to ‘std::uninitialized_fill_n<float*, long unsigned int, float>’ from ‘std::__uninitialized_fill_n<true>::__uninit_fill_n<float*, long unsigned int, float>’
+                                                                   |
+                                                            <------+
+                                                            |
+                                                          ‘constexpr _ForwardIterator std::__uninitialized_fill_n_a(_ForwardIterator, _Size, const _Tp&, allocator<_Tp2>&) [with _ForwardIterator = float*; _Size = long unsigned int; _Tp = float; _Tp2 = float]’: event 79
+                                                            |
+                                                            |  472 |       return std::uninitialized_fill_n(__first, __n, __x);
+                                                            |      |              ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+                                                            |      |                                       |
+                                                            |      |                                       (79) returning to ‘std::__uninitialized_fill_n_a<float*, long unsigned int, float, float>’ from ‘std::uninitialized_fill_n<float*, long unsigned int, float>’
+                                                            |
+                                                     <------+
+                                                     |
+                                                   ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_initialize(size_type, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: event 80
+                                                     |
+                                                     |/usr/include/c++/13/bits/stl_vector.h:1707:40:
+                                                     | 1707 |           std::__uninitialized_fill_n_a(this->_M_impl._M_start, __n, __value,
+                                                     |      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |      |                                        |
+                                                     |      |                                        (80) returning to ‘std::vector<float>::_M_fill_initialize’ from ‘std::__uninitialized_fill_n_a<float*, long unsigned int, float, float>’
+                                                     | 1708 |                                         _M_get_Tp_allocator());
+                                                     |      |                                         ~~~~~~~~~~~~~~~~~~~~~~
+                                                     |
+                                              <------+
+                                              |
+                                            ‘constexpr std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: event 81
+                                              |
+                                              |  572 |       { _M_fill_initialize(__n, __value); }
+                                              |      |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+                                              |      |                           |
+                                              |      |                           (81) returning to ‘std::vector<float>::vector’ from ‘std::vector<float>::_M_fill_initialize’
+                                              |
+                                       <------+
+                                       |
+                                     ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: events 82-83
+                                       |
+                                       |/usr/include/c++/13/bits/vector.tcc:275:18:
+                                       |  275 |           vector __tmp(__n, __val, _M_get_Tp_allocator());
+                                       |      |                  ^~~~~
+                                       |      |                  |
+                                       |      |                  (82) returning to ‘std::vector<float>::_M_fill_assign’ from ‘std::vector<float>::vector’
+                                       |  276 |           __tmp._M_impl._M_swap_data(this->_M_impl);
+                                       |  277 |         }
+                                       |      |         ~         
+                                       |      |         |
+                                       |      |         (83) calling ‘std::vector<float>::~vector’ from ‘std::vector<float>::_M_fill_assign’
+                                       |
+                                       +--> ‘constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = float; _Alloc = std::allocator<float>]’: events 84-85
+                                              |
+                                              |/usr/include/c++/13/bits/stl_vector.h:733:7:
+                                              |  733 |       ~vector() _GLIBCXX_NOEXCEPT
+                                              |      |       ^
+                                              |      |       |
+                                              |      |       (84) entry to ‘std::vector<float>::~vector’
+                                              |  734 |       {
+                                              |  735 |         std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+                                              |      |                      ~
+                                              |      |                      |
+                                              |      |                      (85) inlined call to ‘std::_Destroy<float*, float>’ from ‘std::vector<float>::~vector’
+                                              |
+                                              +--> ‘constexpr void std::_Destroy(_ForwardIterator, _ForwardIterator, allocator<_T2>&) [with _ForwardIterator = float*; _Tp = float]’: event 86
+                                                     |
+                                                     |/usr/include/c++/13/bits/alloc_traits.h:948:20:
+                                                     |  948 |       std::_Destroy(__first, __last);
+                                                     |      |       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+                                                     |      |                    |
+                                                     |      |                    (86) calling ‘std::_Destroy<float*>’ from ‘std::vector<float>::~vector’
+                                                     |
+                                                   ‘constexpr void std::_Destroy(_ForwardIterator, _ForwardIterator) [with _ForwardIterator = float*]’: events 87-89
+                                                     |
+                                                     |/usr/include/c++/13/bits/stl_construct.h:182:5:
+                                                     |  182 |     _Destroy(_ForwardIterator __first, _ForwardIterator __last)
+                                                     |      |     ^~~~~~~~
+                                                     |      |     |
+                                                     |      |     (87) entry to ‘std::_Destroy<float*>’
+                                                     |......
+                                                     |  192 |       if (std::__is_constant_evaluated())
+                                                     |      |       ~~
+                                                     |      |       |
+                                                     |      |       (88) following ‘false’ branch...
+                                                     |......
+                                                     |  195 |       std::_Destroy_aux<__has_trivial_destructor(_Value_type)>::
+                                                     |      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |  196 |         __destroy(__first, __last);
+                                                     |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |      |                  |
+                                                     |      |                  (89) ...to here
+                                                     |
+                                              <------+
+                                              |
+                                            ‘constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = float; _Alloc = std::allocator<float>]’: event 90
+                                              |
+                                              |/usr/include/c++/13/bits/stl_vector.h:735:22:
+                                              |  735 |         std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+                                              |      |                      ^
+                                              |      |                      |
+                                              |      |                      (90) inlined call to ‘std::_Destroy<float*, float>’ from ‘std::vector<float>::~vector’
+                                              |
+                                              +--> ‘constexpr void std::_Destroy(_ForwardIterator, _ForwardIterator, allocator<_T2>&) [with _ForwardIterator = float*; _Tp = float]’: event 91
+                                                     |
+                                                     |/usr/include/c++/13/bits/alloc_traits.h:948:20:
+                                                     |  948 |       std::_Destroy(__first, __last);
+                                                     |      |       ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+                                                     |      |                    |
+                                                     |      |                    (91) returning to ‘std::vector<float>::~vector’ from ‘std::_Destroy<float*>’
+                                                     |
+                                              <------+
+                                              |
+                                            ‘constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = float; _Alloc = std::allocator<float>]’: event 92
+                                              |
+                                              |/usr/include/c++/13/bits/stl_vector.h:738:7:
+                                              |  738 |       }
+                                              |      |       ^
+                                              |      |       |
+                                              |      |       (92) calling ‘std::_Vector_base<float, std::allocator<float> >::~_Vector_base’ from ‘std::vector<float>::~vector’
+                                              |
+                                              +--> ‘constexpr std::_Vector_base<_Tp, _Alloc>::~_Vector_base() [with _Tp = float; _Alloc = std::allocator<float>]’: events 93-94
+                                                     |
+                                                     |  367 |       ~_Vector_base() _GLIBCXX_NOEXCEPT
+                                                     |      |       ^
+                                                     |      |       |
+                                                     |      |       (93) entry to ‘std::_Vector_base<float, std::allocator<float> >::~_Vector_base’
+                                                     |  368 |       {
+                                                     |  369 |         _M_deallocate(_M_impl._M_start,
+                                                     |      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |      |                      |
+                                                     |      |                      (94) calling ‘std::_Vector_base<float, std::allocator<float> >::_M_deallocate’ from ‘std::_Vector_base<float, std::allocator<float> >::~_Vector_base’
+                                                     |  370 |                       _M_impl._M_end_of_storage - _M_impl._M_start);
+                                                     |      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |
+                                                     +--> ‘constexpr void std::_Vector_base<_Tp, _Alloc>::_M_deallocate(pointer, std::size_t) [with _Tp = float; _Alloc = std::allocator<float>]’: events 95-97
+                                                            |
+                                                            |  386 |       _M_deallocate(pointer __p, size_t __n)
+                                                            |      |       ^~~~~~~~~~~~~
+                                                            |      |       |
+                                                            |      |       (95) entry to ‘std::_Vector_base<float, std::allocator<float> >::_M_deallocate’
+                                                            |......
+                                                            |  389 |         if (__p)
+                                                            |      |         ~~
+                                                            |      |         |
+                                                            |      |         (96) following ‘false’ branch (when ‘__p’ is NULL)...
+                                                            |  390 |           _Tr::deallocate(_M_impl, __p, __n);
+                                                            |  391 |       }
+                                                            |      |       ~
+                                                            |      |       |
+                                                            |      |       (97) ...to here
+                                                            |
+                                                     <------+
+                                                     |
+                                                   ‘constexpr std::_Vector_base<_Tp, _Alloc>::~_Vector_base() [with _Tp = float; _Alloc = std::allocator<float>]’: event 98
+                                                     |
+                                                     |  369 |         _M_deallocate(_M_impl._M_start,
+                                                     |      |         ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+                                                     |      |                      |
+                                                     |      |                      (98) returning to ‘std::_Vector_base<float, std::allocator<float> >::~_Vector_base’ from ‘std::_Vector_base<float, std::allocator<float> >::_M_deallocate’
+                                                     |  370 |                       _M_impl._M_end_of_storage - _M_impl._M_start);
+                                                     |      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                     |
+                                              <------+
+                                              |
+                                            ‘constexpr std::vector<_Tp, _Alloc>::~vector() [with _Tp = float; _Alloc = std::allocator<float>]’: event 99
+                                              |
+                                              |  738 |       }
+                                              |      |       ^
+                                              |      |       |
+                                              |      |       (99) returning to ‘std::vector<float>::~vector’ from ‘std::_Vector_base<float, std::allocator<float> >::~_Vector_base’
+                                              |
+                                       <------+
+                                       |
+                                     ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: event 100
+                                       |
+                                       |/usr/include/c++/13/bits/vector.tcc:277:9:
+                                       |  277 |         }
+                                       |      |         ^
+                                       |      |         |
+                                       |      |         (100) returning to ‘std::vector<float>::_M_fill_assign’ from ‘std::vector<float>::~vector’
+                                       |
+                                <------+
+                                |
+                              ‘constexpr void std::vector<_Tp, _Alloc>::assign(size_type, const value_type&) [with _Tp = float; _Alloc = std::allocator<float>]’: event 101
+                                |
+                                |/usr/include/c++/13/bits/stl_vector.h:809:23:
+                                |  809 |       { _M_fill_assign(__n, __val); }
+                                |      |         ~~~~~~~~~~~~~~^~~~~~~~~~~~
+                                |      |                       |
+                                |      |                       (101) returning to ‘std::vector<float>::assign’ from ‘std::vector<float>::_M_fill_assign’
+                                |
+                         <------+
+                         |
+                       ‘void vocalis::DelayLine::prepare(int)’: event 102
+                         |
+                         |src/dsp/VocalDelay.h:12:20:
+                         |   12 |         data.assign(size_t(n), 0);
+                         |      |         ~~~~~~~~~~~^~~~~~~~~~~~~~
+                         |      |                    |
+                         |      |                    (102) returning to ‘vocalis::DelayLine::prepare’ from ‘std::vector<float>::assign’
+                         |
+                  <------+
+                  |
+                ‘main()::<lambda()>’: event 103
+                  |
+                  |tests/AuditDspTests.cpp:28:27:
+                  |   28 |                  d.prepare(11528);
+                  |      |                  ~~~~~~~~~^~~~~~~
+                  |      |                           |
+                  |      |                           (103) returning to ‘main()::<lambda()>’ from ‘vocalis::DelayLine::prepare’
+                  |
+                ‘main()::<lambda()>’: event 104
+                  |
+                  |   30 |                  d.data[0] = .5f;
+                  |
+GCC analyzer exit: 0

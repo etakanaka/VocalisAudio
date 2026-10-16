@@ -1,0 +1,6 @@
+dsp_tests exit 0
+dsp_audit exit 0
+audit_tests exit 0
+gui_tests exit 0
+thread_stress exit 0
+integration_tests exit 0

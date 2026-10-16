@@ -1,0 +1,74 @@
+Internal ctest changing into directory: /home/enos/AudioDevelopment/VocalisVoice/build/Debug
+Test project /home/enos/AudioDevelopment/VocalisVoice/build/Debug
+    Start 1: voice_tests
+1/3 Test #1: voice_tests ......................   Passed    0.79 sec
+    Start 2: dsp_tests
+2/3 Test #2: dsp_tests ........................   Passed    2.54 sec
+    Start 3: gui_tests
+3/3 Test #3: gui_tests ........................   Passed    0.78 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   4.11 sec
+PASS Silence / all paths
+PASS Low-level input
+PASS High-level / no uncontrolled boost
+PASS Input gain accuracy
+PASS Output gain accuracy
+PASS Intensity 0
+PASS Intensity 25
+PASS Intensity 50
+PASS Intensity 75
+PASS Intensity 100
+PASS Compressor static curve / soft knee / stereo linking
+PASS Gain reduction meter equals actual dynamics
+PASS Low-frequency cleanup
+PASS Presence enhancement / bright guard
+PASS Delay timing and feedback
+PASS Parallel activation / isolation 0
+PASS Parallel activation / isolation 1
+PASS Parallel activation / isolation 2
+PASS Doubler stereo decorrelation / mono compatibility
+PASS Reverb pre-delay / decaying diffuse tail
+PASS Smooth effect / bypass transitions
+PASS Layout 1 to 1
+PASS Layout 1 to 2
+PASS Layout 2 to 2
+PASS Rapid automation / rate / block matrix / finite guard
+PASS Repeated prepare / instantiation
+PASS Audio-thread allocation guard
+PASS Sensitivity hysteresis / clipping hold
+BENCH all effects 48k stereo block=64 10s audio / 0.446799s CPU wall (4.46799% realtime)
+BENCH all effects 48k stereo block=256 10s audio / 0.446469s CPU wall (4.46469% realtime)
+BENCH all effects 48k stereo block=1024 10s audio / 0.447156s CPU wall (4.47156% realtime)
+28 passed, 0 failed; allocations in audio=0
+JUCE v9.0.4
+PASS VST3 discovery: Vocalis Voice id=VST3-Vocalis Voice-309a4caa-1ae896dc
+JUCE v9.0.4
+HOST PARAM Input Gain value=0.5
+HOST PARAM Intensity value=0.5
+HOST PARAM Delay Enable value=0
+HOST PARAM Delay Level value=0
+HOST PARAM Doubler Enable value=1
+HOST PARAM Doubler Level value=0.623333
+HOST PARAM Reverb Enable value=1
+HOST PARAM Reverb Level value=0.623333
+HOST PARAM Output Gain value=0.5
+HOST PARAM Bypass value=0
+HOST PARAM Program value=0
+PASS VST3 host parameters: 11
+PASS VST3 processing layout 1 -> 1 (editor closed)
+PASS VST3 processing layout 1 -> 2 (editor closed)
+PASS VST3 processing layout 2 -> 2 (editor closed)
+PASS VST3 automation and state roundtrip
+UNVERIFIED VST3 native editor attachment: XOpenDisplay failed; use GuiTests for the compiled editor render
+PASS VST3 repeated load/unload
+Installed: /tmp/vocalis-voice-installer-8enawrzv/Vocalis Voice.vst3
+Previous Voice bundle retained: /tmp/vocalis-voice-installer-8enawrzv/Vocalis Voice.vst3.backup-20261016071613-333
+Installed: /tmp/vocalis-voice-installer-8enawrzv/Vocalis Voice.vst3
+Removed: /tmp/vocalis-voice-installer-8enawrzv/Vocalis Voice.vst3 (backups and other plugins retained)
+
+
+
+
+PASS install hash / reinstall backup / uninstall / unmarked and symlink protection / Rider untouched

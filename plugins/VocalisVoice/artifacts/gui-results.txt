@@ -1,0 +1,5 @@
+PASS compiled GUI slider attachments, keyboard, numeric fields, reset configuration
+PASS compiled GUI effect-enable attachment
+PASS compiled GUI host feedback
+PASS compiled production editor snapshots at 100% and 80%
+PASS compiled editor destruction

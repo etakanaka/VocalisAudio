@@ -1,0 +1,2 @@
+c5d7b3dfa19f8c953b607b1fe9a2a82d735435d2735f0cf757dca3d081a1a67f  build/VocalisRiderLive_artefacts/Release/VST3/Vocalis Rider Live.vst3/Contents/x86_64-linux/Vocalis Rider Live.so
+c5d7b3dfa19f8c953b607b1fe9a2a82d735435d2735f0cf757dca3d081a1a67f  /home/enos/.vst3/Vocalis Rider Live.vst3/Contents/x86_64-linux/Vocalis Rider Live.so

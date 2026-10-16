@@ -1,0 +1,10 @@
+JUCE v9.0.4
+PASS compiled GUI slider attachments, keyboard, numeric fields, reset configuration
+PASS all three effect enables and Bypass attachments
+PASS GUI preset selection and trim preservation
+PASS compiled GUI host feedback
+PASS numeric readout parse callback and double-click reset handler (native typing UNVERIFIED)
+PASS compiled production editor snapshots at 100% and 80%
+PASS concurrent audio during editor cycles: 3252 callbacks, zero numerical errors
+PASS 20 repeated editor create/resize/paint/destroy cycles
+PASS compiled editor destruction

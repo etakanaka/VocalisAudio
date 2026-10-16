@@ -1,0 +1,2 @@
+b957b90dfe56eb591810cb78a1a6232b9fa51b516976b269f5a080cc8efdb647  artifacts/gui-redesign/baseline-audio-state.bin
+b957b90dfe56eb591810cb78a1a6232b9fa51b516976b269f5a080cc8efdb647  artifacts/gui-redesign/redesigned-audio-state.bin

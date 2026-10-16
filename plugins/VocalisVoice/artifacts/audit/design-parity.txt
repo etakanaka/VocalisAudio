@@ -1,0 +1,31 @@
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels rotary
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels button states
+PASS exact pixels panel
+PASS exact pixels readout
+PASS exact pixels fader
+PASS exact pixels LED
+PASS exact pixels LED
+PASS exact pixels preset selector
+PASS exact pixels level meter
+PASS exact pixels level meter
+PASS exact pixels level meter
+PASS exact pixels level meter
+30 pixel parity comparisons passed
