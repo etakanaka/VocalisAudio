@@ -12,75 +12,220 @@
 namespace {
 using namespace juce;
 namespace Suite {
-const Colour background{0xff0a111e}, border{0xff465b82}, text{0xffedf1ff}, muted{0xffa9bce5};
-const Colour violet{0xffa378ff}, purple{0xff7130de}, yellow{0xffffd24b};
+const Colour background{0xff152431}, border{0xff9daebb}, text{0xffd5deed}, muted{0xffb8c7d6};
+const Colour violet{0xffc7d3df}, purple{0xff50748c}, yellow{0xffd3d63a};
 void label(Graphics& g, const String& s, Rectangle<float> r, float size,
            Colour colour = text, bool bold = false, Justification align = Justification::centred)
 {
     g.setColour(colour);
-    g.setFont(FontOptions(size, bold ? Font::bold : Font::plain));
+    g.setFont(Font(FontOptions("DejaVu Sans", size*1.14f, bold ? Font::bold : Font::plain)).withHorizontalScale(.87f));
     g.drawText(s, r, align);
 }
-void panel(Graphics& g, Rectangle<float> r, float radius = 9.f)
+// Deterministic, cached brushed grain, drawn in chassis coordinates so the finish
+// remains continuous across individually framed panels. No reference pixels used.
+const Image& grain()
 {
-    g.setColour(Colours::black.withAlpha(.35f));
-    g.fillRoundedRectangle(r.translated(0, 3), radius);
-    g.setGradientFill(ColourGradient(Colour(0xff1b273d), r.getTopRight(),
-                                     Colour(0xff101925), r.getBottomLeft(), false));
-    g.fillRoundedRectangle(r, radius);
-    g.setColour(border); g.drawRoundedRectangle(r, radius, .85f);
-    g.setColour(Colours::white.withAlpha(.035f));
-    g.drawRoundedRectangle(r.reduced(1), radius - 1, .7f);
+    static const Image texture = [] {
+        Image im(Image::ARGB,1000,1250,true); Graphics brush(im); Random random(0x564f4341);
+        for(int y=0;y<1250;++y) for(int j=0;j<9;++j) {
+            float x=float(random.nextInt(1000)), length=25.f+float(random.nextInt(260));
+            brush.setColour((random.nextBool()?Colours::white:Colours::black).withAlpha(.012f+random.nextFloat()*.035f));
+            brush.drawLine(x,float(y),jmin(1000.f,x+length),float(y),.5f);
+        }
+        return im;
+    }();
+    return texture;
 }
-void readout(Graphics& g, Rectangle<float> r, const String& value, float size = 16)
+void navy(Graphics& g, Rectangle<float> r)
 {
-    g.setColour(Colour(0xff090f1b)); g.fillRoundedRectangle(r, 5);
-    g.setColour(border); g.drawRoundedRectangle(r, 5, .9f);
-    label(g, value, r, size);
+    g.setGradientFill(ColourGradient(Colour(0xff233c51),r.getCentreX(),r.getCentreY(),Colour(0xff111d27),r.getRight(),r.getBottom(),true));g.fillRect(r);
+    Graphics::ScopedSaveState save(g);g.reduceClipRegion(r.toNearestInt());g.setOpacity(.48f);g.drawImageAt(grain(),0,0);
+}
+void panel(Graphics& g, Rectangle<float> r, float radius = 10.f)
+{
+    g.setColour(Colours::black.withAlpha(.7f));g.fillRoundedRectangle(r.expanded(2).translated(0,2),radius+1);
+    { Graphics::ScopedSaveState save(g);Path clip;clip.addRoundedRectangle(r,radius);g.reduceClipRegion(clip);navy(g,r); }
+    g.setColour(Colour(0xffc2d0dc));g.drawRoundedRectangle(r,radius,1.1f);
+    g.setColour(Colour(0xff070d11));g.drawRoundedRectangle(r.reduced(1.5f),radius-1,1);
+    g.setColour(Colours::white.withAlpha(.10f));g.drawRoundedRectangle(r.reduced(2.5f),radius-2,.6f);
+}
+void digits(Graphics& g, const String& value, Rectangle<float> r, float height)
+{
+    const float digitWidth=height*.52f, gap=height*.15f, thick=height*.045f;
+    float total=0;
+    for(auto c:value)total+=c=='.'?height*.18f:digitWidth+gap;
+    float x=r.getCentreX()-total/2, y=r.getCentreY()-height/2;
+    const unsigned masks[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+    auto segment=[&](float sx,float sy,float length,bool vertical,bool on) {
+        Path shape;
+        if(vertical) {
+            shape.startNewSubPath(sx,sy+thick);shape.lineTo(sx+thick,sy);shape.lineTo(sx+thick*2,sy+thick);
+            shape.lineTo(sx+thick*2,sy+length-thick);shape.lineTo(sx+thick,sy+length);shape.lineTo(sx,sy+length-thick);
+        } else {
+            shape.startNewSubPath(sx+thick,sy);shape.lineTo(sx+length-thick,sy);shape.lineTo(sx+length,sy+thick);
+            shape.lineTo(sx+length-thick,sy+thick*2);shape.lineTo(sx+thick,sy+thick*2);shape.lineTo(sx,sy+thick);
+        }
+        shape.closeSubPath();g.setColour(Colour(0xfff1f5ef).withAlpha(on?.95f:.025f));g.fillPath(shape,AffineTransform(1.f,-.065f,.065f*(y+height),0.f,1.f,0.f));
+    };
+    for(auto c:value) {
+        if(c=='.'){g.setColour(Colour(0xfff1f5ef));g.fillEllipse(x,y+height-thick*2,thick*2,thick*2);x+=height*.18f;continue;}
+        unsigned mask=c>='0'&&c<='9'?masks[c-'0']:c=='-'?0x40:0;
+        segment(x+thick,y,digitWidth-thick*2,false,(mask&1)!=0);
+        segment(x+digitWidth-thick*2,y+thick,height/2-thick,true,(mask&2)!=0);
+        segment(x+digitWidth-thick*2,y+height/2,height/2-thick,true,(mask&4)!=0);
+        segment(x+thick,y+height-thick*2,digitWidth-thick*2,false,(mask&8)!=0);
+        segment(x,y+height/2,height/2-thick,true,(mask&16)!=0);
+        segment(x,y+thick,height/2-thick,true,(mask&32)!=0);
+        segment(x+thick,y+height/2-thick,digitWidth-thick*2,false,(mask&64)!=0);
+        x+=digitWidth+gap;
+    }
+}
+void readout(Graphics& g, Rectangle<float> r, const String& value, float size = 32)
+{
+    g.setColour(Colour(0xff030609));g.fillRoundedRectangle(r.expanded(2),4);
+    g.setColour(Colour(0xff486475));g.drawRoundedRectangle(r,3,1.3f);
+    g.setColour(Colour(0xff070909));g.fillRoundedRectangle(r.reduced(3),2);
+    g.setGradientFill(ColourGradient(Colour(0xff3a413c).withAlpha(.22f),r.getCentre(),Colours::transparentBlack,r.getTopRight(),true));g.fillRoundedRectangle(r.reduced(3),2);
+    if(value.isNotEmpty())digits(g,value,r.reduced(6),size);
+}
+void wordmark(Graphics& g, const String& word, Rectangle<float> r, Colour colour)
+{
+    GlyphArrangement letters;
+    auto font=Font(FontOptions("DejaVu Sans",40.f,Font::plain)).withExtraKerningFactor(.16f);
+    letters.addLineOfText(font,word,0,0);
+    Path outline;letters.createPath(outline);auto bounds=outline.getBounds();
+    auto transform=AffineTransform::translation(-bounds.getX(),-bounds.getY()).scaled(r.getWidth()/bounds.getWidth(),r.getHeight()/bounds.getHeight()).translated(r.getX(),r.getY());
+    g.setColour(Colours::black.withAlpha(.6f));g.fillPath(outline,transform.translated(0,1.3f));
+    g.setGradientFill(ColourGradient(colour.brighter(.2f),r.getTopLeft(),colour.darker(.18f),r.getBottomLeft(),false));g.fillPath(outline,transform);
 }
 void glowLine(Graphics& g, Line<float> line, float width = 3.f)
 {
-    for (int i = 3; i > 0; --i) {
-        g.setColour(violet.withAlpha(.06f * float(4-i)));
-        g.drawLine(line, width + float(i * 4));
-    }
-    g.setColour(violet); g.drawLine(line, width + 2);
-    g.setColour(Colour(0xfff5eaff)); g.drawLine(line, width);
+    g.setColour(Colour(0xff640e0e)); g.drawLine(line, width+2);
+    g.setColour(Colour(0xffff4141)); g.drawLine(line, width);
+    g.setColour(Colour(0xffffe3da)); g.drawLine(line, .7f);
 }
 void cap(Graphics& g, float x, float y, float width, float height)
 {
-    auto r = Rectangle<float>(x-width/2, y-height*.65f, width, height);
-    g.setColour(Colours::black.withAlpha(.6f)); g.fillRoundedRectangle(r.translated(2, 5), 5);
-    g.setGradientFill(ColourGradient(Colour(0xff9da6c2), r.getTopLeft(), Colour(0xff111727), r.getBottomLeft(), false));
-    g.fillRoundedRectangle(r, 5);
-    g.setColour(Colour(0xff070c17)); g.drawRoundedRectangle(r, 5, 1.8f);
-    g.setColour(Colour(0xffbfcbe9).withAlpha(.65f));
-    g.drawHorizontalLine(int(r.getY()+4), r.getX()+5, r.getRight()-5);
-    for (int i = 1; i <= 3; ++i) {
-        auto yy = r.getY() + height * float(i) / 5;
-        g.setColour(Colour(0xff090e1c)); g.drawLine(r.getX()+4, yy, r.getRight()-4, yy, 1.6f);
-        g.setColour(Colour(0xff8995b4).withAlpha(.35f)); g.drawLine(r.getX()+4, yy+2, r.getRight()-4, yy+2, .7f);
+    const bool main=height>90;
+    auto r=Rectangle<float>(x-width/2,y-height/2,width,height);
+    for(int i=6;i>0;--i) {
+        g.setColour(Colours::black.withAlpha(.065f));
+        g.fillRoundedRectangle(r.expanded(float(i)).translated(2,4),3);
     }
-    glowLine(g, {{r.getX()+8, y}, {r.getRight()-8, y}}, 2.2f);
+    ColourGradient casing(Colour(0xffe4e7e1),r.getTopLeft(),Colour(0xff424846),r.getBottomRight(),false);
+    casing.addColour(.15,Colour(0xffe9ece7));casing.addColour(.7,Colour(0xff9b9f99));
+    g.setGradientFill(casing);g.fillRoundedRectangle(r,3);
+    g.setColour(Colour(0xff292f2e));g.drawRoundedRectangle(r,3,1);
+    // The lower bevel is a separate plane, rather than a flat rounded rectangle.
+    auto bevel=Rectangle<float>(r.getX()+2,r.getBottom()-(main?22.f:15.f),width-4,main?20.f:13.f);
+    g.setGradientFill(ColourGradient(Colour(0xffb8bbb5),bevel.getTopLeft(),Colour(0xff5b605d),bevel.getBottomLeft(),false));g.fillRoundedRectangle(bevel,2);
+    if(main) {
+        auto face=r.reduced(5,5).withBottom(r.getBottom()-18);
+        ColourGradient metal(Colour(0xfffafbf6),face.getTopLeft(),Colour(0xffd5d8d1),face.getBottomLeft(),false);
+        metal.addColour(.09,Colour(0xffeef0e9));metal.addColour(.16,Colour(0xffaeb3ad));metal.addColour(.58,Colour(0xffd5d8d0));metal.addColour(.87,Colour(0xffe2e5dc));
+        g.setGradientFill(metal);g.fillRoundedRectangle(face,2);
+        for(float yy=face.getY()+24;yy<face.getBottom()-5;yy+=12.5f) {
+            g.setColour(Colour(0xff757c74).withAlpha(.75f));g.drawLine(face.getX()+1,yy,face.getRight()-1,yy,1);
+            g.setColour(Colours::white.withAlpha(.9f));g.drawLine(face.getX()+1,yy+2,face.getRight()-1,yy+2,1.1f);
+        }
+        g.setColour(Colour(0xfff4f6ef));g.drawRoundedRectangle(face,2,1);
+        g.setColour(Colours::black.withAlpha(.23f));g.drawLine(face.getX()-1,face.getY()+2,face.getX()-1,face.getBottom(),1);
+        glowLine(g,{{r.getX()+2,y},{r.getRight()-2,y}},2.3f);
+    } else {
+        auto top=Rectangle<float>(r.getX()+3,r.getY()+3,width-6,15);
+        g.setGradientFill(ColourGradient(Colour(0xfff9fbf5),top.getTopLeft(),Colour(0xffd9ddd5),top.getBottomLeft(),false));g.fillRect(top);
+        auto slot=Rectangle<float>(r.getX()+3,r.getY()+19,width-6,3.5f);
+        g.setColour(Colour(0xff222926));g.fillRect(slot);
+        g.setColour(Colour(0xffeef0e9));g.drawLine(slot.getX(),slot.getBottom()+1,slot.getRight(),slot.getBottom()+1,1.2f);
+        Path face;
+        face.startNewSubPath(r.getX()+4,r.getY()+25);face.lineTo(r.getRight()-4,r.getY()+25);
+        face.lineTo(r.getRight()-3,r.getBottom()-14);face.lineTo(r.getX()+3,r.getBottom()-14);face.closeSubPath();
+        g.setGradientFill(ColourGradient(Colour(0xffebeee6),x,r.getY()+25,Colour(0xffaeb4ab),x,r.getBottom()-14,false));g.fillPath(face);
+        for(float yy=r.getY()+26;yy<r.getBottom()-14;yy+=1.5f) {
+            g.setColour(Colours::white.withAlpha(.22f));g.drawLine(r.getX()+4,yy,r.getRight()-4,yy,.5f);
+        }
+        g.setColour(Colours::white.withAlpha(.8f));g.drawLine(r.getX()+3,r.getBottom()-13,r.getRight()-3,r.getBottom()-13,.9f);
+    }
+    g.setColour(Colour(0xffe3e7df));g.drawRoundedRectangle(r.reduced(1),2,.85f);
+    g.setColour(Colours::white.withAlpha(.65f));g.drawLine(r.getX()+2,r.getY()+2,r.getX()+2,r.getBottom()-4,.7f);
 }
-void track(Graphics& g, float x, float top, float bottom)
+void track(Graphics& g, float x, float top, float bottom, bool main = false)
 {
-    auto r = Rectangle<float>(x-10, top-10, 20, bottom-top+20);
-    g.setColour(Colour(0xff030610)); g.fillRoundedRectangle(r, 9);
-    g.setColour(Colour(0xff7285b6)); g.drawRoundedRectangle(r, 9, .9f);
-    g.setColour(purple.withAlpha(.35f)); g.fillRoundedRectangle(x-4, top, 8, bottom-top, 4);
-    g.setGradientFill(ColourGradient(violet, x, top, purple, x, bottom, false));
-    g.fillRoundedRectangle(x-2, top, 4, bottom-top, 2);
+    const float width=main?61.f:52.f;
+    auto well=Rectangle<float>(x-width/2,top-39,width,bottom-top+84);
+    g.setGradientFill(ColourGradient(Colour(0xff152735),well.getTopLeft(),Colour(0xff233645),well.getTopRight(),false));g.fillRoundedRectangle(well,4);
+    g.setColour(Colour(0xff536671));g.drawRoundedRectangle(well,4,.8f);
+    auto slot=Rectangle<float>(x-8,top-26,16,bottom-top+57);
+    g.setColour(Colour(0xff020405));g.fillRoundedRectangle(slot,8);
+    g.setColour(Colour(0xff7f8174));g.drawRoundedRectangle(slot,8,1.2f);
+    g.setColour(Colours::black.withAlpha(.8f));g.drawLine(x-6,slot.getY()+10,x-6,slot.getBottom()-9,2);
 }
-void ticks(Graphics& g, float x, float top, float bottom, bool numbers = true)
+void silverRail(Graphics& g, Rectangle<float> r)
 {
-    for (int db = -12; db <= 12; ++db) {
-        auto y = top + (12-float(db))/24 * (bottom-top);
-        bool major = db % 6 == 0;
-        g.setColour(Colour(major ? 0xff8195c1 : 0xff394e73));
-        g.drawLine(x, y, x+(major ? 17.f : 5.f), y, major ? 1.4f : .8f);
-        if (major && numbers)
-            label(g, (db > 0 ? "+" : "") + String(db), {x+23, y-10, 38, 20}, 13, muted, false, Justification::centredLeft);
+    // Median RGB samples from the supplied Oct 18 silver reference, x=9..69.
+    // Both rails use the same left-lit profile and restrained horizontal grain.
+    ColourGradient metal(Colour(0xffe3e6e5),r.getTopLeft(),
+                         Colour(0xff4e5964),r.getTopRight(),false);
+    metal.addColour(2.0/62,Colour(0xfff0f0ee));
+    metal.addColour(4.0/62,Colour(0xffe6e8e5));
+    metal.addColour(12.0/62,Colour(0xffd5d8d7));
+    metal.addColour(24.0/62,Colour(0xffbbc0c2));
+    metal.addColour(32.0/62,Colour(0xffaab1b4));
+    metal.addColour(44.0/62,Colour(0xff90999f));
+    metal.addColour(60.0/62,Colour(0xff6e7983));
+    g.setGradientFill(metal);g.fillRect(r);
+    Random brush(0x53494c56);
+    for(float y=r.getY()+5;y<r.getBottom()-2;y+=8) {
+        const float inset=3+brush.nextFloat()*9;
+        g.setColour(Colours::white.withAlpha(.008f+brush.nextFloat()*.008f));
+        g.drawLine(r.getX()+inset,y,r.getRight()-3,y,.65f);
+    }
+    g.setColour(Colour(0xffabb5bb));
+    g.drawLine(r.getX()+.5f,r.getY(),r.getX()+.5f,r.getBottom(),1);
+    g.setColour(Colour(0xff4e5964));
+    g.drawLine(r.getRight()-.5f,r.getY(),r.getRight()-.5f,r.getBottom(),1);
+}
+void screw(Graphics& g, float x, float y, float radius=8)
+{
+    auto head=Rectangle<float>(x-radius,y-radius,2*radius,2*radius);
+    g.setColour(Colours::black.withAlpha(.5f));
+    g.fillEllipse(head.expanded(1.7f).translated(.7f,1.3f));
+    g.setColour(Colour(0xff14232c));g.fillEllipse(head.expanded(1));
+    // Outer bevel and a domed face share the sampled rail's cool silver tones.
+    g.setGradientFill(ColourGradient(Colour(0xffe6e8e5),head.getTopLeft(),
+                                    Colour(0xff6e7983),head.getBottomRight(),false));
+    g.fillEllipse(head);
+    auto face=head.reduced(radius*.13f);
+    g.setGradientFill(ColourGradient(Colour(0xffe6e8e5),x-radius*.35f,y-radius*.45f,
+                                    Colour(0xff90999f),x+radius,y+radius,true));
+    g.fillEllipse(face);
+    g.setColour(Colour(0xffaab1b4));g.drawEllipse(head,.65f);
+    // Long arms and an open silver face make a Phillips slot, not a dark rivet
+    // centre. The smallest head has a ~4.4 px cross at the default 0.48 scale.
+    const float arm=radius*.65f, half=radius*.17f;
+    Path slot;
+    slot.startNewSubPath(x-half,y-arm);slot.lineTo(x+half,y-arm);
+    slot.lineTo(x+half,y-half);slot.lineTo(x+arm,y-half);
+    slot.lineTo(x+arm,y+half);slot.lineTo(x+half,y+half);
+    slot.lineTo(x+half,y+arm);slot.lineTo(x-half,y+arm);
+    slot.lineTo(x-half,y+half);slot.lineTo(x-arm,y+half);
+    slot.lineTo(x-arm,y-half);slot.lineTo(x-half,y-half);slot.closeSubPath();
+    g.setColour(Colour(0xfff0f0ee).withAlpha(.7f));
+    g.fillPath(slot,AffineTransform::translation(.4f,.5f));
+    g.setColour(Colour(0xff14212b));g.fillPath(slot);
+    Path shine;shine.addCentredArc(x,y,radius-.65f,radius-.65f,0,-1.5f,.1f,true);
+    g.setColour(Colour(0xfff0f0ee).withAlpha(.65f));
+    g.strokePath(shine,PathStrokeType(.7f));
+}
+void ticks(Graphics& g, float x, float top, float bottom, bool numbers = true, bool left = false)
+{
+    for(int step=-24;step<=24;++step) {
+        const float db=float(step)*.5f,y=top+(12-db)/24*(bottom-top);
+        bool major=step%12==0, medium=step%6==0;
+        float length=major?28.f:medium?16.f:10.f;
+        g.setColour((major?text:muted).withAlpha(major?1.f:.85f));
+        g.drawLine(left?x+28-length:x,y,left?x+28:x+length,y,major?1.5f:.9f);
+        if(major&&numbers&&!(left&&(step==24||step==0)))label(g,(db>0?"+":"")+String(int(db)),{left?x-43:x+40,y-13,42,26},20,text,false,left?Justification::centredRight:Justification::centredLeft);
     }
 }
 void led(Graphics& g, Point<float> c, bool active, Colour colour)
@@ -92,9 +237,10 @@ void led(Graphics& g, Point<float> c, bool active, Colour colour)
     g.setColour(Colour(0xff040914)); g.fillEllipse(c.x-13, c.y-13, 26, 26);
     g.setColour(border); g.drawEllipse(c.x-13, c.y-13, 26, 26, 1);
     auto r = Rectangle<float>(c.x-9, c.y-9, 18, 18);
-    g.setGradientFill(ColourGradient(active ? colour.brighter(.6f) : Colour(0xff71809d), r.getTopLeft(),
-                                    active ? colour : Colour(0xff111a2a), r.getBottomRight(), false));
+    g.setGradientFill(ColourGradient(active ? colour.brighter(.8f) : Colour(0xff9ca398), c.x-3,c.y-4,
+                                    active ? colour.darker(.25f) : Colour(0xff171d19), c.x+8,c.y+8,true));
     g.fillEllipse(r);
+    g.setColour(Colours::white.withAlpha(active?.23f:.18f));g.fillEllipse(c.x-5,c.y-6,6,4);
 }
 }
 
@@ -114,111 +260,148 @@ public:
         setColour(PopupMenu::textColourId, Suite::text);
         setColour(PopupMenu::highlightedBackgroundColourId, Suite::purple);
     }
-    Font getLabelFont(Label&) override { return Font(FontOptions(15)); }
+    Font getLabelFont(Label&) override { return Font(FontOptions("DejaVu Sans",18.f,Font::plain)); }
     void drawLabel(Graphics& g, Label& l) override
     {
-        if (dynamic_cast<Slider*>(l.getParentComponent()) != nullptr) {
-            auto r = l.getLocalBounds().toFloat().reduced(.5f);
-            g.setColour(Colour(0xff0a101d)); g.fillRoundedRectangle(r, 5);
-            g.setColour(Suite::border); g.drawRoundedRectangle(r, 5, .85f);
-            if (!l.isBeingEdited()) Suite::label(g, l.getText(), r.reduced(2), 15);
+        if(auto* slider=dynamic_cast<Slider*>(l.getParentComponent())) {
+            auto r=l.getLocalBounds().toFloat().reduced(2);
+            if(slider->getName()=="rider"||slider->getName()=="output") {
+                Suite::readout(g,r,l.isBeingEdited()?String():String(slider->getValue(),1),32);
+            } else if(!l.isBeingEdited()) {
+                if(slider->isHorizontal())Suite::label(g,l.getText(),r,20);
+                else if(slider->isMouseOverOrDragging(true)||slider->hasKeyboardFocus(true))Suite::label(g,l.getText(),r,13,Suite::muted);
+            }
             return;
         }
-        LookAndFeel_V4::drawLabel(g, l);
+        LookAndFeel_V4::drawLabel(g,l);
     }
-    Font getComboBoxFont(ComboBox&) override { return Font(FontOptions(15)); }
+    Font getComboBoxFont(ComboBox&) override { return Font(FontOptions("DejaVu Sans",16.f,Font::plain)); }
     Slider::SliderLayout getSliderLayout(Slider& s) override
     {
-        if (s.isVertical()) {
-            Slider::SliderLayout l;
-            l.sliderBounds = {0, 16, s.getWidth(), s.getHeight()-76};
-            auto width = s.getName() == "idle" ? 60 : 96;
-            l.textBoxBounds = {s.getWidth()/2-width/2, s.getHeight()-30, width, 28};
+        Slider::SliderLayout l;
+        if(s.isVertical()) {
+            const bool idle=s.getName()=="idle";
+            l.sliderBounds={0,16,s.getWidth(),s.getHeight()-(idle?76:168)};
+            const int boxWidth=idle?70:s.getName()=="output"?120:130;
+            l.textBoxBounds={s.getWidth()/2-boxWidth/2,s.getHeight()-(idle?30:86),boxWidth,idle?26:52};
             return l;
         }
-        if (s.isHorizontal()) {
-            Slider::SliderLayout l;
-            l.sliderBounds = {8, 8, s.getWidth()-128, 28};
-            l.textBoxBounds = {s.getWidth()-100, 5, 96, 34};
-            return l;
+        if(s.isHorizontal()) {
+            l.sliderBounds={10,8,s.getWidth()-126,28};l.textBoxBounds={s.getWidth()-102,3,100,40};return l;
         }
-        return LookAndFeel_V4::getSliderLayout(s);
+        l.sliderBounds={0,0,s.getWidth(),s.getWidth()};
+        l.textBoxBounds={s.getWidth()/2-44,s.getHeight()-18,88,18};return l;
     }
     void drawRotarySlider(Graphics& g, int x, int y, int w, int h, float pos,
                           float start, float end, Slider& s) override
     {
-        auto area = Rectangle<float>(float(x), float(y), float(w), float(h)).reduced(9);
-        auto c = area.getCentre();
-        auto radius = jmin(area.getWidth(), area.getHeight())*.5f-7;
-        for (int i = 0; i <= 24; ++i) {
-            auto angle = start+(end-start)*float(i)/24;
-            auto v = Point<float>(std::sin(angle), -std::cos(angle));
-            g.setColour(Colour(i%4 ? 0xff455984 : 0xff8496bd));
-            g.drawLine({c+v*(radius+5), c+v*(radius+(i%4 ? 9 : 12))}, 1);
+        ignoreUnused(s);
+        const auto c=Point<float>(float(x)+float(w)/2,float(y)+float(h)/2);
+        const float outer=jmin(float(w),float(h))*.5f-11, radius=outer-12;
+        for(int i=0;i<=10;++i) {
+            float a=start+(end-start)*float(i)/10;auto v=Point<float>(std::sin(a),-std::cos(a));
+            g.setColour(Suite::text);g.drawLine({c+v*(outer-1),c+v*(outer+(i%5==0?9.f:6.f))},2.2f);
         }
-        Path full, value;
-        full.addCentredArc(c.x, c.y, radius, radius, 0, start, end, true);
-        value.addCentredArc(c.x, c.y, radius, radius, 0, start, start+pos*(end-start), true);
-        g.setColour(Colour(0xff070b18)); g.strokePath(full, PathStrokeType(9));
-        g.setColour(Suite::purple.withAlpha(.2f)); g.strokePath(value, PathStrokeType(14));
-        g.setGradientFill(ColourGradient(Suite::violet.brighter(.2f), c.x-radius, c.y-radius, Suite::purple, c.x+radius, c.y+radius, false));
-        g.strokePath(value, PathStrokeType(6));
-        auto face = Rectangle<float>(c.x-radius+7, c.y-radius+7, 2*(radius-7), 2*(radius-7));
-        g.setColour(Colours::black.withAlpha(.6f)); g.fillEllipse(face.translated(2, 5));
-        g.setGradientFill(ColourGradient(Colour(0xff6a779b), face.getTopLeft(), Colour(0xff080e19), face.getBottomRight(), false));
-        g.fillEllipse(face); g.setColour(Colour(0xff030813)); g.drawEllipse(face, 1.5f);
-        g.setGradientFill(ColourGradient(Colour(0xff293247), face.getTopLeft(), Colour(0xff0c1420), face.getBottomRight(), false));
-        g.fillEllipse(face.reduced(3));
-        auto angle = start+pos*(end-start);
-        auto v = Point<float>(std::sin(angle), -std::cos(angle));
-        g.setColour(Colour(0xffd4caff)); g.drawLine({c+v*(radius*.25f), c+v*(radius*.76f)}, 3);
-        if (s.hasKeyboardFocus(true)) { g.setColour(Suite::violet); g.drawEllipse(face.expanded(2), 1); }
+        Path scale;scale.addCentredArc(c.x,c.y,outer-2,outer-2,0,start,end,true);
+        g.setColour(Suite::text);g.strokePath(scale,PathStrokeType(2.4f));
+        auto outerFace=Rectangle<float>(c.x-radius-5,c.y-radius-5,2*(radius+5),2*(radius+5));
+        for(int i=7;i>0;--i){g.setColour(Colours::black.withAlpha(.08f));g.fillEllipse(outerFace.expanded(float(i)).translated(2,5));}
+        g.setGradientFill(ColourGradient(Colour(0xffeeeeeb),outerFace.getTopLeft(),Colour(0xff414948),outerFace.getBottomRight(),false));g.fillEllipse(outerFace);
+        g.setColour(Colour(0xff0b151c));g.drawEllipse(outerFace,2);
+        auto face=outerFace.reduced(8);
+        g.setGradientFill(ColourGradient(Colour(0xffe9ece8),face.getTopLeft(),Colour(0xff909592),face.getBottomRight(),false));g.fillEllipse(face);
+        // Fine lathe rings and reflected radial streaks on the actual knob face.
+        {
+            Graphics::ScopedSaveState save(g);Path clip;clip.addEllipse(face);g.reduceClipRegion(clip);
+            for(int i=0;i<180;++i) {
+                float a=float(i)*MathConstants<float>::twoPi/180;
+                float shimmer=.012f+.018f*std::abs(std::cos(a*2+.4f));
+                g.setColour((i%2?Colours::white:Colours::black).withAlpha(shimmer));
+                g.drawLine(c.x,c.y,c.x+std::cos(a)*radius,c.y+std::sin(a)*radius,.65f);
+            }
+            for(float r=4;r<radius-2;r+=1.15f){g.setColour(Colours::white.withAlpha(.04f));g.drawEllipse(c.x-r,c.y-r,2*r,2*r,.4f);}
+            g.setGradientFill(ColourGradient(Colours::white.withAlpha(.3f),c.x-radius*.4f,c.y-radius*.5f,Colours::transparentWhite,c.x+radius,c.y+radius,true));g.fillEllipse(face);
+        }
+        g.setColour(Colour(0xffe6e8e5));g.drawEllipse(face,1);
+        g.setColour(Colour(0xff727b7b));g.drawEllipse(face.expanded(1.5f),1);
+        auto a=start+pos*(end-start);auto v=Point<float>(std::sin(a),-std::cos(a)),normal=Point<float>(v.y,-v.x);
+        Path pointer;pointer.startNewSubPath(c+v*(radius*.38f)-normal*1.5f);pointer.lineTo(c+v*(radius*.95f)-normal*3.2f);
+        pointer.lineTo(c+v*(radius*.95f)+normal*3.2f);pointer.lineTo(c+v*(radius*.38f)+normal*1.5f);pointer.closeSubPath();
+        g.setColour(Colour(0xff101511));g.fillPath(pointer);
+        if(s.hasKeyboardFocus(true)){g.setColour(Suite::text.withAlpha(.6f));g.drawEllipse(outerFace.expanded(2),1);}
     }
+
     void drawLinearSlider(Graphics& g, int x, int y, int w, int h, float pos,
                           float, float, Slider::SliderStyle style, Slider& s) override
     {
         if (style == Slider::LinearHorizontal) {
-            auto r = Rectangle<float>(float(x), float(y+h/2-7), float(w), 14);
-            g.setColour(Colour(0xff030812)); g.fillRoundedRectangle(r.expanded(10, 10), 5);
-            g.setColour(Suite::border); g.drawRoundedRectangle(r.expanded(10, 10), 5, .8f);
-            g.setColour(Colour(0xff1b2539)); g.fillRoundedRectangle(r, 2);
-            auto fraction = jlimit(0.f, 1.f, (inputDb+42)/42);
-            g.setGradientFill(ColourGradient(Colour(0xfff3ba34), r.getTopLeft(), Colour(0xffffe46a), r.getTopRight(), false));
-            g.fillRect(r.withWidth(r.getWidth()*fraction));
-            g.setColour(Suite::border); g.drawRoundedRectangle(r, 2, .7f);
-            Suite::glowLine(g, {{pos, r.getY()-9}, {pos, r.getBottom()+9}}, 3);
+            auto r=Rectangle<float>(float(x),float(y)+float(h)*.5f-12,float(w),24);
+            g.setColour(Colour(0xff050a0e));g.fillRoundedRectangle(r.expanded(11,9),5);
+            g.setColour(Colour(0xff5f7c8f));g.drawRoundedRectangle(r.expanded(11,9),5,1.1f);
+            g.setColour(Colours::black);g.drawRoundedRectangle(r.expanded(7,5),3,3);
+            float fraction=jlimit(0.f,1.f,(inputDb+42)/42);
+            for(int i=0;i<66;++i) {
+                auto bar=Rectangle<float>(r.getX()+float(i)*r.getWidth()/66,r.getY(),r.getWidth()/66-2,r.getHeight());
+                auto lit=i<44?Colour(0xff95ed0a):Colour(0xfff1e329);
+                auto off=Colour(0xff3e4231).interpolatedWith(Colour(0xff1c2326),float(i)/66);
+                g.setGradientFill(ColourGradient(float(i)/66<fraction?lit:off,bar.getTopLeft(),float(i)/66<fraction?lit.darker(.3f):off.darker(.4f),bar.getBottomRight(),false));g.fillRoundedRectangle(bar,1);
+                g.setColour(Colours::white.withAlpha(.14f));g.drawLine(bar.getX()+1,bar.getY()+1,bar.getX()+1,bar.getBottom()-1,.7f);
+            }
+            auto cap=Rectangle<float>(pos-24,r.getY()-7,48,r.getHeight()+14);
+            ColourGradient metal(Colour(0xffaab0af).withAlpha(.82f),cap.getTopLeft(),Colour(0xff6a7273).withAlpha(.82f),cap.getTopRight(),false);
+            metal.addColour(.43,Colour(0xffd1d4d0).withAlpha(.85f));g.setGradientFill(metal);g.fillRect(cap);
+            g.setColour(Colour(0xffd4dada).withAlpha(.55f));g.drawRect(cap,1);
+            for(float xx=cap.getX()+4;xx<cap.getRight();xx+=5){g.setColour(Colours::white.withAlpha(.12f));g.drawVerticalLine(int(xx),cap.getY(),cap.getBottom());}
+            Suite::glowLine(g,{{pos,cap.getY()},{pos,cap.getBottom()}},2);
             return;
         }
         auto cx = float(x+w/2);
         if (s.getName() == "idle") {
-            g.setColour(Suite::yellow.withAlpha(.12f)); g.drawLine(cx, float(y), cx, float(y+h), 1);
-            Path marker; marker.addTriangle(cx-9, pos-6, cx+2, pos, cx-9, pos+6);
-            g.setColour(Suite::yellow); g.fillPath(marker);
+            
+            Path marker; marker.addTriangle(cx-10, pos-9, cx, pos, cx-10, pos+9);
+            g.setColour(Colour(0xffaeb9bb)); g.fillPath(marker); g.setColour(Suite::text);g.strokePath(marker,PathStrokeType(1.2f));
             return;
         }
-        Suite::track(g, cx, float(y), float(y+h));
-        Suite::cap(g, cx, pos, s.getName() == "rider" ? 62.f : 58.f, s.getName() == "rider" ? 65.f : 47.f);
+        // Track wells are painted on the chassis to avoid clipping their extended ends.
+        Suite::cap(g, cx, pos, s.getName() == "rider" ? 98.f : 77.f, s.getName() == "rider" ? 138.f : 57.f);
         if (s.hasKeyboardFocus(true)) {
             g.setColour(Suite::violet); g.drawRoundedRectangle(cx-36, pos-37, 72, 74, 5, 1);
         }
     }
     void drawButtonBackground(Graphics& g, Button& b, const Colour&, bool over, bool down) override
     {
-        auto r = b.getLocalBounds().toFloat().reduced(1);
-        bool selected = b.getToggleState();
-        auto top = selected ? Colour(0xff6130af) : Colour(0xff1b2940);
-        auto bottom = selected ? Colour(0xff38117f) : Colour(0xff0d1523);
-        if (over) top = top.brighter(.15f);
-        if (down) bottom = bottom.darker(.2f);
-        g.setColour(Colours::black.withAlpha(.4f)); g.fillRoundedRectangle(r.translated(0, 2), 6);
-        g.setGradientFill(ColourGradient(top, r.getTopLeft(), bottom, r.getBottomLeft(), false));
-        g.fillRoundedRectangle(r, 6);
-        g.setColour(selected || b.hasKeyboardFocus(true) ? Suite::violet : Suite::border);
-        g.drawRoundedRectangle(r, 6, selected ? 1.4f : .8f);
-        if (selected) { g.setColour(Suite::violet.withAlpha(.3f)); g.drawRoundedRectangle(r.reduced(2), 5, 1); }
+        auto r=b.getLocalBounds().toFloat().reduced(2);
+        if(b.getName().startsWith("attack")) {
+            if(b.hasKeyboardFocus(true)){g.setColour(Suite::muted);g.drawRoundedRectangle(r.withTrimmedLeft(42),2,.7f);}
+            return;
+        }
+        if(b.getName()=="utilities") {
+            g.setColour(Suite::muted);g.drawEllipse(r.reduced(2),1.2f);
+            if(over){g.setColour(Suite::text.withAlpha(.15f));g.fillEllipse(r.reduced(2));}return;
+        }
+        const bool mode=b.getName().startsWith("automation"),selected=b.getToggleState();
+        Colour tint=b.getName()=="automationWrite"?Colour(0xff85232b):b.getName()=="automationRead"?Colour(0xff437e12):Colour(0xffc1c6c7);
+        g.setColour(Colours::black.withAlpha(.8f));g.fillRoundedRectangle(r.expanded(2).translated(0,2),4);
+        g.setColour(Colour(0xff071014));g.fillRoundedRectangle(r,3);
+        auto face=r.reduced(3);
+        auto top=selected?tint.brighter(.25f):tint, bottom=tint.darker(mode?.5f:.3f);
+        if(over)top=top.brighter(.12f);
+        if(down)bottom=bottom.darker(.2f);
+        g.setGradientFill(ColourGradient(top,face.getTopLeft(),bottom,face.getBottomLeft(),false));g.fillRoundedRectangle(face,2);
+        g.setColour(Colour(0xffafbdc2).withAlpha(.7f));g.drawRoundedRectangle(face,2,1);
+        g.setColour(Colours::white.withAlpha(.4f));g.drawLine(face.getX()+2,face.getY()+1,face.getRight()-2,face.getY()+1,1.4f);
+        g.setColour(Colours::black.withAlpha(.4f));g.drawLine(face.getX()+1,face.getBottom()-2,face.getRight()-1,face.getBottom()-2,2);
+        if(b.hasKeyboardFocus(true)){g.setColour(Suite::text);g.drawRoundedRectangle(r.expanded(1),4,1);}
     }
     void drawButtonText(Graphics& g, TextButton& b, bool, bool) override
-    { Suite::label(g, b.getButtonText(), b.getLocalBounds().toFloat(), b.getHeight()<30 ? 11.f : 15.f); }
+    {
+        auto r=b.getLocalBounds().toFloat();
+        if(b.getName().startsWith("attack")){r.removeFromLeft(47);Suite::label(g,b.getButtonText(),r,22,Suite::text,false,Justification::centredLeft);return;}
+        if(b.getName()=="utilities"){Suite::label(g,"i",r,18);return;}
+        const bool mode=b.getName().startsWith("automation"),silver=b.getName()=="automationOff";
+        if(mode){Suite::led(g,{24.f,r.getCentreY()},b.getToggleState(),b.getName()=="automationRead"?Colour(0xff7ff000):b.getName()=="automationWrite"?Colour(0xfffc3334):Colour(0xffdce4dd));r.removeFromLeft(36);}
+        Suite::label(g,b.getButtonText(),r,mode?19.f:14.f,silver?Colour(0xff152432):mode?Colour(0xfff4f5f0):Colour(0xff12202a));
+    }
     void drawComboBox(Graphics& g, int w, int h, bool, int, int, int, int, ComboBox&) override
     {
         auto r = Rectangle<float>(.5f, .5f, float(w)-1, float(h)-1);
@@ -252,7 +435,7 @@ public:
         }
         for (int db : {0, -6, -12, -24, -48}) {
             auto y = bottom-float(db+60)/60*r.getHeight();
-            Suite::label(g, String(db), {0, y-9, cx-18, 18}, 12, Suite::muted, false, Justification::centredRight);
+            if(getWidth()>65) Suite::label(g, String(db), {0, y-9, cx-18, 18}, 12, Suite::muted, false, Justification::centredRight);
             g.setColour(Suite::muted); g.drawLine(cx-15, y, cx-11, y, 1);
         }
         if (peak) {
@@ -276,6 +459,9 @@ public:
         setName("range"); setWantsKeyboardFocus(true);
         setTooltip("Range Min / Max: drag either handle. Shift for fine adjustment. Arrow Left/Right selects a handle; Up/Down adjusts. Double-click resets -6 / +6 dB.");
     }
+    // Leave the adjoining Idle marker's hit area clear. The visual wells are
+    // chassis-painted, but the existing Range and Idle gestures stay independent.
+    bool hitTest(int x, int) override { return x >= getWidth()/2-32; }
     ~RangeControl() override
     {
         if (dragging) processor.state.getParameter(id())->endChangeGesture();
@@ -283,10 +469,13 @@ public:
     void paint(Graphics& g) override
     {
         auto cx = float(getWidth())/2;
-        Suite::track(g, cx, 16, float(getHeight()-60));
+
+        auto top=position(processor.value("rangeMax")),bottom=position(processor.value("rangeMin"));
+        g.setGradientFill(ColourGradient(Suite::yellow.withAlpha(.20f),cx-26,top,Suite::yellow.withAlpha(.04f),cx+26,bottom,false));
+        g.fillRect(cx-26,top,52.f,bottom-top);
         for (int i : {0, 1}) {
             auto y = position(processor.value(i ? "rangeMax" : "rangeMin"));
-            Suite::cap(g, cx, y, 62, 35);
+            Suite::cap(g, cx, y, 77, 57);
             if (hasKeyboardFocus(true) && handle == i) { g.setColour(Suite::violet); g.drawRoundedRectangle(cx-34, y-20, 68, 40, 4, 1); }
         }
     }
@@ -352,10 +541,22 @@ public:
     }
 };
 
+class UtilityPanel final : public Component {
+public:
+    void paint(Graphics& g) override {
+        Suite::panel(g,getLocalBounds().toFloat().reduced(3),9);
+        Suite::label(g,"PRESETS & CAPTURE",{20,12,400,30},19);
+        Suite::label(g,"INPUT",{425,18,65,22},12);
+        Suite::label(g,"MUSIC",{510,18,65,22},12);
+    }
+};
+
 class Editor final : public AudioProcessorEditor, private Timer {
     Vocalis& p;
     SuiteLook look;
     Component canvas;
+    UtilityPanel utilityPanel;
+    TextButton utilities{"i"};
     Slider target, spill, vocal, music, rider, output, idle;
     RangeControl range;
     LevelMeter inputMeter, musicMeter;
@@ -441,91 +642,94 @@ public:
         for (int i = 0; i < 8; ++i) presets.addItem(p.getProgramName(i), i+1);
         presets.onChange = [this]{ p.setCurrentProgram(presets.getSelectedId()-1); };
         canvas.addChildComponent(aboutPanel);
-        setResizable(true, true); setResizeLimits(750, 750, 1400, 1400);
-        getConstrainer()->setFixedAspectRatio(1); setSize(1000, 1000);
+        canvas.addChildComponent(utilityPanel);utilityPanel.setName("utilityPanel");
+        for(Component* c : std::initializer_list<Component*>{&presets,&bypass,&exportButton,&clear,&about,&inputMeter,&musicMeter})utilityPanel.addAndMakeVisible(c);
+        addButton(utilities,"utilities",[this]{utilityPanel.setVisible(!utilityPanel.isVisible());utilityPanel.toFront(false);});
+        utilities.setTooltip("Presets, bypass, CSV export, clear capture, About, input and music meters");
+        setResizable(true, false); setResizeLimits(480, 600, 1120, 1400);
+        getConstrainer()->setFixedAspectRatio(.8); setSize(480, 600);
         timerCallback(); startTimerHz(30);
     }
     ~Editor() override { stopTimer(); setLookAndFeel(nullptr); }
     void resized() override
     {
-        canvas.setTransform(AffineTransform()); canvas.setBounds(0, 0, 1000, 1000);
-        canvas.setTransform(AffineTransform::scale(getWidth()/1000.f));
-        aboutPanel.setBounds(175, 260, 650, 440);
-        presets.setBounds(680, 42, 166, 37); bypass.setBounds(859, 42, 105, 37);
-        target.setBounds(250, 137, 635, 48);
-        spill.setBounds(325, 224, 144, 168);
-        vocal.setBounds(469, 204, 178, 188);
-        music.setBounds(651, 224, 144, 168);
-        fast.setBounds(860, 284, 100, 40); slow.setBounds(860, 330, 100, 40);
-        range.setBounds(230, 478, 100, 350);
-        rider.setBounds(450, 478, 100, 350); output.setBounds(670, 478, 100, 350);
-        idle.setBounds(550, 478, 78, 350);
-        inputMeter.setBounds(42, 478, 94, 350); musicMeter.setBounds(868, 478, 94, 350);
-        off.setBounds(504, 888, 132, 46); write.setBounds(644, 888, 132, 46); read.setBounds(784, 888, 132, 46);
-        about.setBounds(270, 935, 90, 23);
-        exportButton.setBounds(62, 935, 107, 23); clear.setBounds(177, 935, 66, 23);
+        canvas.setTransform(AffineTransform()); canvas.setBounds(0, 0, 1000, 1250);
+        canvas.setTransform(AffineTransform::scale(jmin(getWidth()/1000.f,getHeight()/1250.f)));
+        aboutPanel.setBounds(175, 300, 650, 440);
+        utilityPanel.setBounds(200,744,600,286);
+        presets.setBounds(30,65,350,38);bypass.setBounds(30,120,150,38);
+        exportButton.setBounds(195,120,185,38);clear.setBounds(30,177,150,38);about.setBounds(195,177,185,38);
+        inputMeter.setBounds(425,45,65,220);musicMeter.setBounds(510,45,65,220);
+        utilities.setBounds(715,1053,26,26);
+        target.setBounds(254,34,619,48);
+        spill.setBounds(288,155,126,156);vocal.setBounds(482,135,146,176);music.setBounds(705,155,126,156);
+        fast.setBounds(143,198,125,38);slow.setBounds(143,239,125,38);
+        range.setBounds(161,401,110,534);rider.setBounds(428,401,144,626);output.setBounds(693,401,144,626);
+        idle.setBounds(154,401,56,534);
+        off.setBounds(309,1076,123,50);write.setBounds(438,1076,123,50);read.setBounds(567,1076,123,50);
+
     }
+
     void paint(Graphics& g) override
     {
-        Graphics::ScopedSaveState saved(g);
-        g.addTransform(AffineTransform::scale(getWidth()/1000.f));
-        g.setGradientFill(ColourGradient(Suite::background.brighter(.1f), 0, 0, Colour(0xff080e19), 1000, 1000, false)); g.fillAll();
-        Suite::panel(g, {18, 18, 964, 84});
-        Suite::panel(g, {18, 114, 964, 294});
-        Suite::panel(g, {18, 420, 964, 554});
-        Suite::panel(g, {26, 860, 948, 100});
-        // Original suite waveform mark, drawn from geometry rather than reference pixels.
-        for (int i = 0; i < 5; ++i) {
-            float heights[] = {10, 25, 45, 25, 10};
-            auto h = heights[i]; g.setColour(Suite::violet.withAlpha(.12f)); g.fillRoundedRectangle(39+float(i*11)-2, 60-h/2-2, 10, h+4, 4);
-            g.setColour(Colour(0xffbca7fa)); g.fillRoundedRectangle(39+float(i*11), 60-h/2, 6, h, 3);
+        Graphics::ScopedSaveState saved(g);g.fillAll(Colour(0xff111b23));
+        g.addTransform(AffineTransform::scale(jmin(getWidth()/1000.f,getHeight()/1250.f)));
+        Suite::navy(g,{84,0,832,1250});
+        Suite::navy(g,{87,4,827,306});Suite::navy(g,{87,1143,827,104});
+        for(float x:{0.f,917.f}) {
+            Suite::silverRail(g,{x,1,83,1248});
+            for(float y:{30.f,1198.f})Suite::screw(g,x+32,y,12);
         }
-        Suite::label(g, "VOCALIS", {108, 30, 292, 54}, 51, Suite::text, true, Justification::centredLeft);
-        g.setColour(Suite::border.brighter(.3f)); g.drawLine(417, 33, 417, 88, 1);
-        Suite::label(g, "RIDER LIVE", {448, 31, 217, 34}, 26, Colour(0xff9bb8ff), true, Justification::centredLeft);
-        Suite::label(g, "AUTOMATIC VOCAL GAIN RIDER", {450, 69, 220, 17}, 10, Suite::muted, false, Justification::centredLeft);
-        Suite::label(g, "Target", {50, 126, 165, 28}, 23, Suite::text, true, Justification::centredLeft);
-        Suite::label(g, "DESIRED VOCAL LEVEL", {50, 159, 184, 19}, 12, Suite::muted, false, Justification::centredLeft);
-        for (int db = -42; db <= 0; db += 6) {
-            float x = 258+(float(db+42)/42)*507;
-            g.setColour(Suite::border); g.drawLine(x, 178, x, 183, .8f);
-            Suite::label(g, String(db), {x-18, 184, 36, 16}, 11, Suite::muted);
+        g.setColour(Colour(0xff080e13));g.drawRect(85.f,2.f,831.f,1245.f,3.f);
+        g.setColour(Colour(0xff607b91));g.drawRect(87.f,3.f,827.f,1243.f,1.f);
+        for(float x:{109.f,892.f})for(float y:{23.f,1209.f})Suite::screw(g,x,y,10);
+        Suite::label(g,"Target",{133,37,105,33},24,Suite::text,true);
+        Suite::led(g,{155,108},p.activity.load(),Colour(0xff80f000));Suite::label(g,"Ride",{180,92,95,31},22,Suite::text,false,Justification::centredLeft);
+        Suite::led(g,{155,148},!p.activity.load(),Colour(0xffbac4b6));Suite::label(g,"Idle",{180,132,95,31},22,Suite::text,false,Justification::centredLeft);
+        Suite::label(g,"Sensitivity",{516,96,110,27},21);
+        g.setColour(Suite::text);g.drawLine(276,112,507,112,1.2f);g.drawLine(632,112,807,112,1.2f);g.drawLine(276,112,276,121,1.2f);g.drawLine(807,112,807,121,1.2f);
+        // One mechanical switch face, with the existing two button hit areas.
+        auto sw=Rectangle<float>(143,200,33,77);
+        g.setColour(Colours::black);g.fillRoundedRectangle(sw,3);g.setColour(Colour(0xff648193));g.drawRoundedRectangle(sw,3,1.2f);
+        g.setColour(Colour(0xff38464e));g.drawRoundedRectangle(sw.reduced(3),1,1);
+        float sy=p.value("attack")==1?208.f:244.f;
+        auto lever=Rectangle<float>(150,sy,18,28);
+        g.setColour(Colours::black);g.fillRect(lever.translated(2,3));
+        g.setGradientFill(ColourGradient(Colour(0xfff2f5ed),lever.getTopLeft(),Colour(0xff949c96),lever.getBottomLeft(),false));g.fillRoundedRectangle(lever,2);
+        g.setColour(Colour(0xffdfe6df));g.drawRoundedRectangle(lever,2,1);
+        for(int i=4;i<19;i+=2){g.setColour(Colour(0xff737b76));g.drawLine(lever.getX()+2,sy+float(i),lever.getRight()-2,sy+float(i),.6f);}
+        for(auto item:{std::pair{351.f,"Spill"},std::pair{555.f,"Vocal"},std::pair{768.f,"Music"}}) {
+            Suite::label(g,item.second,{item.first-55,272,110,29},23);
+            Suite::label(g,"-",{item.first-69,251,20,28},25);Suite::label(g,"+",{item.first+49,251,20,28},25);
         }
-        Suite::label(g, "dBFS", {899, 147, 50, 23}, 12, Suite::muted);
-        g.setColour(Suite::border); g.drawLine(242, 225, 242, 385, .8f); g.drawLine(830, 225, 830, 385, .8f);
-        Suite::label(g, "Sensitivity", {262, 218, 240, 28}, 22, Suite::text, true, Justification::centredLeft);
-        Suite::label(g, "DETECTOR", {263, 247, 245, 17}, 11, Suite::muted, false, Justification::centredLeft);
-        Suite::led(g, {64, 270}, p.activity.load(), Suite::yellow);
-        Suite::label(g, "Ride", {94, 255, 120, 28}, 20, Suite::text, true, Justification::centredLeft);
-        Suite::label(g, "LEVELING ACTIVE", {94, 284, 138, 18}, 10, Suite::muted, false, Justification::centredLeft);
-        Suite::led(g, {64, 342}, !p.activity.load(), Colour(0xffa9bde7));
-        Suite::label(g, "Idle", {94, 326, 120, 28}, 20, Suite::text, true, Justification::centredLeft);
-        Suite::label(g, "WAITING FOR SIGNAL", {94, 355, 143, 18}, 10, Suite::muted, false, Justification::centredLeft);
-        Suite::label(g, "Spill", {340, 391, 112, 17}, 15, Suite::text, true);
-        Suite::label(g, "Vocal", {500, 391, 115, 17}, 15, Suite::text, true);
-        Suite::label(g, "Music", {665, 391, 115, 17}, 15, Suite::text, true);
-        Suite::label(g, "Response", {845, 217, 130, 28}, 20, Suite::text, true);
-        Suite::label(g, "RIDER SPEED", {846, 249, 128, 17}, 11, Suite::muted);
-        for (float x : {146.f, 392.f, 628.f, 853.f}) { g.setColour(Suite::border.withAlpha(.55f)); g.drawLine(x, 437, x, 844, .8f); }
-        Suite::label(g, "IN", {47, 441, 85, 24}, 16);
-        Suite::label(g, "dBFS", {49, 466, 82, 16}, 10, Suite::muted);
-        Suite::label(g, "Range", {197, 434, 166, 29}, 22, Suite::muted, true);
-        Suite::label(g, "LEVEL RANGE", {201, 465, 160, 17}, 11, Suite::muted);
-        Suite::label(g, "Rider", {434, 434, 135, 29}, 22, Suite::muted, true);
-        Suite::label(g, "TARGET GAIN", {434, 465, 135, 17}, 11, Suite::muted);
-        Suite::label(g, "Output", {649, 434, 145, 29}, 22, Suite::muted, true);
-        Suite::label(g, "MAKEUP GAIN", {648, 465, 147, 17}, 11, Suite::muted);
-        Suite::label(g, "MUSIC", {866, 441, 100, 24}, 15);
-        Suite::label(g, "SIDECHAIN", {866, 466, 100, 16}, 10, Suite::muted);
-        for (float x : {306.f, 526.f, 746.f}) Suite::ticks(g, x, 494, 768);
-        for (float x : {237.f, 457.f, 677.f}) Suite::ticks(g, x-19, 494, 768, false);
-        Suite::readout(g, {195, 798, 170, 23}, "MIN  " + String(p.value("rangeMin"), 1) + " dB", 13);
-        Suite::readout(g, {195, 825, 170, 23}, "MAX  " + String(p.value("rangeMax"), 1) + " dB", 13);
-        Suite::label(g, "IDLE", {550, 830, 78, 17}, 10, Suite::yellow);
-        Suite::label(g, "Automation", {61, 877, 238, 29}, 22, Suite::muted, true, Justification::centredLeft);
-        Suite::label(g, "WRITE GAIN CHANGES TO HOST", {62, 909, 280, 18}, 11, Suite::muted, false, Justification::centredLeft);
-        g.setColour(Suite::border); g.drawRoundedRectangle(496, 880, 428, 62, 8, .8f);
-        if (p.dropped.load() > 0) Suite::label(g, "CAPTURE FULL / DROPPED POINTS", {255, 936, 235, 20}, 10, Suite::yellow);
+        g.setColour(Colour(0xff03090d));g.drawLine(87,311,914,311,4);
+        g.setColour(Colour(0xff8ba3b6));g.drawLine(88,311,914,311,1);
+        for(auto item:{std::pair{102.f,"Range"},std::pair{367.f,"Rider"},std::pair{647.f,"Output"}}) {
+            float width=item.first==367.f?269.f:253.f;
+            Suite::panel(g,{item.first,323,width,708},10);
+            Suite::label(g,item.second,{item.first+55,335,width-110,32},23);
+            Suite::screw(g,item.first+15,338,7);Suite::screw(g,item.first+15,1017,7);
+            Suite::screw(g,item.first+width-15,338,7);Suite::screw(g,item.first+width-15,1017,7);
+            float info=item.first+width-48;g.setColour(Suite::muted);g.drawEllipse(info-10,341,20,20,1.2f);Suite::label(g,"i",{info-8,340,16,21},16);
+        }
+        Suite::track(g,216,417,875);Suite::track(g,500,417,875,true);Suite::track(g,765,417,875);
+        Suite::ticks(g,253,417,875);Suite::ticks(g,538,417,875);Suite::ticks(g,800,417,875);Suite::ticks(g,434,417,875,true,true);
+        const float idleY=417+(12-p.value("idle"))/24*458;
+        g.setColour(Suite::yellow.withAlpha(.8f));g.drawLine(192,idleY,242,idleY,1);
+        Suite::glowLine(g,{{369,646},{462,646}},2);
+        Suite::readout(g,{159,944,125,48},String(p.value("rangeMax")-p.value("rangeMin"),1),32);
+        Suite::label(g,"dB",{290,948,40,40},21);
+        Suite::label(g,String(p.value("rangeMin"),1)+" / "+String(p.value("rangeMax"),1)+" dB",{157,998,130,18},12,Suite::muted);
+        Suite::label(g,"dB",{573,948,40,40},21);Suite::label(g,"dB",{838,948,40,40},21);
+        Suite::label(g,"Automation",{442,1042,120,29},21);
+        g.setColour(Suite::text);g.drawLine(309,1058,432,1058,1);g.drawLine(567,1058,690,1058,1);g.drawLine(309,1058,309,1067,1);g.drawLine(690,1058,690,1067,1);
+        if(p.dropped.load()>0)Suite::label(g,"CAPTURE FULL / DROPPED POINTS",{345,1126,315,14},10,Suite::yellow);
+        g.setColour(Colour(0xff0a131b));g.drawLine(87,1140,914,1140,5);g.setColour(Colour(0xff6e8aa0));g.drawLine(88,1141,913,1141,2);g.setColour(Colour(0xffa6b9c7).withAlpha(.5f));g.drawLine(88,1140,913,1140,1);
+        for(int i=0;i<6;++i){float heights[]={18,33,50,34,19,11};auto h=heights[i];g.setColour(Colour(0xffdce2e4));g.fillRoundedRectangle(158.f+float(i)*9,1190-h/2,4,h,2);}
+        Suite::wordmark(g,"VOCALIS",{227,1178,226,28},Colour(0xffd7dde1));
+        Suite::wordmark(g,"RIDER",{612,1179,121,28},Colour(0xffd4dce3));
+        Suite::wordmark(g,"LIVE",{757,1179,91,28},Colour(0xff65b5e8));
+
     }
 };
 }

@@ -1,0 +1,37 @@
+ M plugins/VocalisRider/Source/Editor.cpp
+ M plugins/VocalisRider/tests/GuiTests.cpp
+?? docs/VOCALIS_RIDER_APPROVED_DESIGN.md
+?? docs/VOCALIS_RIDER_MAIN_VERSION_SYNC.md
+?? plugins/VocalisRider/artifacts/author-attribution/about.png
+?? plugins/VocalisRider/artifacts/compact-gui/editor-1120x1400.png
+?? plugins/VocalisRider/artifacts/compact-gui/editor-480x600.png
+?? plugins/VocalisRider/artifacts/compact-gui/editor-560x700.png
+?? plugins/VocalisRider/artifacts/compact-gui/editor-640x800.png
+?? plugins/VocalisRider/artifacts/compact-gui/editor-800x1000.png
+?? plugins/VocalisRider/artifacts/compact-gui/running-editor.png
+?? plugins/VocalisRider/artifacts/compact-gui/utilities.png
+?? plugins/VocalisRider/artifacts/main-version-sync/central-editor-1120x1400.png
+?? plugins/VocalisRider/artifacts/main-version-sync/central-editor-480x600.png
+?? plugins/VocalisRider/artifacts/main-version-sync/central-editor-560x700.png
+?? plugins/VocalisRider/artifacts/main-version-sync/central-editor-800x1000.png
+?? plugins/VocalisRider/artifacts/main-version-sync/compatibility-comparison.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/copied-files.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/destination-only-preserved.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/git-status-after.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/git-status-before.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/source-comparison.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/source-sha256.json
+?? plugins/VocalisRider/artifacts/main-version-sync/updated-files.txt
+?? plugins/VocalisRider/artifacts/main-version-sync/visual-comparison.txt
+?? plugins/VocalisRider/artifacts/silver-screws/editor-1120x1400.png
+?? plugins/VocalisRider/artifacts/silver-screws/editor-480x600.png
+?? plugins/VocalisRider/artifacts/silver-screws/editor-560x700.png
+?? plugins/VocalisRider/artifacts/silver-screws/editor-800x1000.png
+?? plugins/VocalisRider/artifacts/silver-screws/silver-reference-comparison.png
+?? plugins/VocalisRider/docs/GUI_REDESIGN_CORRECTION_REPORT.md
+?? plugins/VocalisRider/docs/GUI_REDESIGN_FROM_NEWDESIGN_REPORT.md
+?? plugins/VocalisRider/docs/RIDER_COMPACT_GUI_REPORT.md
+?? plugins/VocalisRider/docs/RIDER_SILVER_AND_SCREW_CORRECTION_REPORT.md
+?? plugins/VocalisRider/docs/VOCALIS_RIDER_APPROVED_DESIGN.md
+?? plugins/VocalisRider/docs/VOCALIS_RIDER_MAIN_VERSION_SYNC.md
+?? plugins/VocalisRider/newdesign.png

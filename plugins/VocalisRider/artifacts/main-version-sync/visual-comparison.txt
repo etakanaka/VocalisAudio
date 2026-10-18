@@ -1,0 +1,4 @@
+480x600: difference bounding box versus approved screenshot: None
+560x700: difference bounding box versus approved screenshot: (402, 591, 413, 602)
+800x1000: difference bounding box versus approved screenshot: None
+1120x1400: difference bounding box versus approved screenshot: None
