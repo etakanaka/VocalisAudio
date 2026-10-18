@@ -33,11 +33,13 @@ Installation defaults to `~/.vst3/Vocalis Voice.vst3`. This sandbox mounts ~/.vs
 
 Set input for yellow sensitivity on loud passages, turn Intensity, add the three returns, and level-match with output. Defaults: intensity 50, delay off, doubler and reverb on. All returns can be switched fully off. There is no automatic makeup gain or output limiter. Ten factory presets preserve input/output trims and Bypass; REAPER state saves all parameters. See [controls](docs/CONTROLS.md), [DSP design](docs/DSP.md) and [preset values](docs/PRESETS.md).
 
-The authoritative GUI is now adapted from actual Vocalis Rider Live source, with exact palette and rendering components locally reused under the preserved AGPL notices. The older concept PNG and previous Voice appearance are retained in the checkpoint. Actual GUI captures: [normal](artifacts/gui.png) and [80%](artifacts/gui-80-percent.png). The image is not used as an interactive overlay.
+The approved interface follows the `newdesign.png` reference and opens at **960 x 617** for laptop-friendly use. The entire JUCE interface remains interactive and resizable from 840 x 540 to 2054 x 1321; the optional compact size is available in Settings. All controls remain attached to the existing parameters, and the reference image is not used as an interactive overlay. Captures: [default 960 x 617](artifacts/gui-960x617.png), [compact 840 x 540](artifacts/gui-840x540.png), [large 1200 x 771](artifacts/gui-large-1200x771.png).
+
+The GUI draws on the same JUCE components and look-and-feel adapted from Vocalis Rider Live source under the preserved AGPL notices. DSP, parameters, presets, state and plugin identity remain unchanged by the size update.
 
 ## Verification and limits
 
-Read the current [audit](docs/VOICE_FINAL_AUDIT.md), [REAPER procedure](docs/REAPER_TESTING.md) and [known issues](docs/VOICE_KNOWN_ISSUES.md). Passing automated DSP and VST3 harness tests does not establish REAPER integration or subjective production quality. REAPER-specific and real-vocal listening acceptance checks remain explicitly unverified.
+Read the current [audit](docs/VOICE_FINAL_AUDIT.md), [GUI redesign correction report](docs/GUI_REDESIGN_CORRECTION_REPORT.md), [REAPER procedure](docs/REAPER_TESTING.md) and [known issues](docs/VOICE_KNOWN_ISSUES.md). Release validation passes all seven registered tests. VST3 loading, automation and state roundtrip pass in the plugin probe. The native editor attachment and manual REAPER project/session checks remain unverified in this environment; automated tests do not establish REAPER integration or subjective production quality.
 
 Identity: bundle `audio.vocalis.voice`, manufacturer `Vcls`, plugin `Vvce`; VST3 processor `ABCDEF019182FAEB56636C7356766365`, controller `ABCDEF011234ABCD56636C7356766365`. All ten stable parameter IDs begin `vv_`; no Rider identifiers or state are reused. Host adds a separate Program selector to the ten parameters.
 

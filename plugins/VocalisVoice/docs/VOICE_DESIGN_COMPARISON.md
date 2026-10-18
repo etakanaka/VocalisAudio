@@ -1,5 +1,9 @@
 # Voice / Rider design comparison
 
+## Current approved interface
+
+The approved GUI follows `newdesign.png` and opens at 960 x 617. All existing panels, controls, indicators, preset selection, and branding remain present; the complete JUCE interface scales proportionally at a fixed aspect ratio. Settings offers 840 x 540 compact, 960 x 617 default, and 1200 x 771 large sizes. Current compiled-editor captures are `artifacts/gui-960x617.png`, `artifacts/gui-840x540.png`, and `artifacts/gui-large-1200x771.png`. The historical audit below describes the component parity work and earlier screenshot names; it does not describe the current default dimensions.
+
 Reference: actual Rider `Source/Editor.cpp`; source hash is recorded. Existing Rider artifact `artifacts/final-debug/final-editor.png` was inspected and copied read-only into Voice's `artifacts/audit/rider-existing-editor.png`. It is a pre-existing compiled-editor render, not a new desktop capture made during this task.
 
 | Item | Outcome | Evidence |

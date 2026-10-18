@@ -14,10 +14,10 @@ class SensitivityIndicator : public juce::Component
     int state = 0;
     void paint(juce::Graphics &g) override
     {
-        juce::Colour colours[]{voiceui::muted, voiceui::teal, vocalis::design::Suite::yellow,
+        juce::Colour colours[]{voiceui::muted, juce::Colour(0xff76ff32), vocalis::design::Suite::yellow,
                                juce::Colours::red};
         vocalis::design::Suite::led(g, {18, 18}, state > 0, colours[juce::jlimit(0, 3, state)]);
-        voiceui::label(g, "SENSITIVITY", {42, 5, getWidth() - 42, 26}, 11, voiceui::muted,
+        voiceui::label(g, "SENSITIVITY", {44, 1, getWidth() - 44, 34}, 17, voiceui::text,
                        juce::Justification::centredLeft);
     }
 };

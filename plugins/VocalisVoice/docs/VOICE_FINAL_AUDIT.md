@@ -2,6 +2,8 @@
 
 **Controlled-testing status. Not declared production-ready.** Native Linux VST3 builds and automated checks pass. Actual REAPER loading, native window interaction and recorded-vocal listening are unverified. Local installation is blocked by the read-only mount.
 
+GUI size follow-up (2026-10-18): the approved reference-matched editor now opens at 960 x 617 with 840 x 540 compact and 1200 x 771 large Settings options. Updated size snapshots and current Release test results are documented in [the GUI correction report](GUI_REDESIGN_CORRECTION_REPORT.md) and [GUI regression results](VOICE_REGRESSION_TESTS.md).
+
 Related reports: [design system](VOCALIS_DESIGN_SYSTEM.md), [visual comparison](VOICE_DESIGN_COMPARISON.md), [regression tests](VOICE_REGRESSION_TESTS.md), [known issues](VOICE_KNOWN_ISSUES.md).
 
 ## Protection and baseline

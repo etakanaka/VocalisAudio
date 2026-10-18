@@ -13,7 +13,8 @@
 class LevelMeter : public juce::Component
 {
     std::atomic<float> rmsDb[2]{{-120}, {-120}}, peakDb[2]{{-120}, {-120}};
-    vocalis::design::RiderLevelMeter left{rmsDb[0], &peakDb[0]}, right{rmsDb[1], &peakDb[1]};
+    vocalis::design::RiderLevelMeter left{rmsDb[0], &peakDb[0], false},
+        right{rmsDb[1], &peakDb[1], false};
 
     bool mono = false;
 
@@ -45,21 +46,30 @@ class LevelMeter : public juce::Component
     }
     void resized() override
     {
-        left.setBounds(mono ? 50 : 0, 16, 94, getHeight() - 16);
-        right.setBounds(100, 16, 94, getHeight() - 16);
+        left.setBounds(mono ? 42 : 0, 16, 86, getHeight() - 16);
+        right.setBounds(78, 16, 86, getHeight() - 16);
         right.setVisible(!mono);
     }
     void paint(juce::Graphics &g) override
     {
         if (mono)
-            voiceui::label(g, output && clipping ? "CLIP" : "MONO", {50, 0, 94, 16}, 10,
+            voiceui::label(g, output && clipping ? "CLIP" : "MONO", {42, 410, 86, 20}, 14,
                            output && clipping ? juce::Colours::red : voiceui::muted);
         else
         {
-            voiceui::label(g, "L", {0, 0, 94, 16}, 10, voiceui::muted);
-            voiceui::label(g, "R", {100, 0, 94, 16}, 10, voiceui::muted);
+            voiceui::label(g, "L", {0, 410, 86, 20}, 14, voiceui::muted);
+            voiceui::label(g, "R", {78, 410, 86, 20}, 14, voiceui::muted);
+            for (int db : {0, -12, -24, -36, -48, -60})
+            {
+                float f = float(db + 60) / 60.f;
+                float y = 16.f + 10.f + (1.f - f) * 386.f;
+                voiceui::label(g, juce::String(db), juce::Rectangle<int>(0, int(y - 10), 25, 20), 15,
+                               voiceui::muted, juce::Justification::centredRight);
+                g.setColour(voiceui::muted.withAlpha(.75f));
+                g.drawLine(27.f, y, 31.f, y, 1.f);
+            }
         }
-        if (!mono && output && clipping)
-            voiceui::label(g, "CLIP", {55, 0, 84, 16}, 11, juce::Colours::red);
+        if (output && clipping)
+            voiceui::label(g, "CLIP", {43, 0, 78, 20}, 14, juce::Colours::red);
     }
 };

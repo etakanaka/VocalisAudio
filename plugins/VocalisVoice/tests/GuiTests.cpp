@@ -30,6 +30,7 @@ void collect(juce::Component &c, std::vector<juce::Slider *> &sliders,
 }
 void save(juce::AudioProcessorEditor &editor, const juce::File &target)
 {
+    target.getParentDirectory().createDirectory();
     auto image = editor.createComponentSnapshot(editor.getLocalBounds(), true, 1.0f);
     require(image.isValid(), "invalid snapshot");
     bool varied = false;
@@ -58,11 +59,13 @@ int main(int argc, char **argv)
         {
             for (int c = 0; c < 2; ++c)
                 for (int i = 0; i < 256; ++i)
-                    b.setSample(c, i, .23f * std::sin(float(k * 256 + i) * .04f));
+                    b.setSample(c, i, .08f * std::sin(float(k * 256 + i) * .04f));
             p.processBlock(b, m);
         }
         auto editor = ownEditor(p);
         require(editor != nullptr, "editor");
+        require(editor->getWidth() == 960 && editor->getHeight() == 617,
+                "host-facing default editor size");
         editor->setVisible(true);
         std::vector<juce::Slider *> sliders;
         std::vector<juce::Button *> toggles;
@@ -83,10 +86,18 @@ int main(int argc, char **argv)
                     std::abs(s.delay + 16) < .06f && std::abs(s.doubler + 14) < .06f &&
                     std::abs(s.reverb + 18) < .06f,
                 "slider attachments");
-        for (auto *slider : sliders)
+        const int readoutWidths[]{270, 96, 96, 146, 146, 146};
+        const int readoutHeights[]{59, 31, 31, 39, 39, 39};
+        for (size_t index = 0; index < sliders.size(); ++index)
         {
+            auto *slider = sliders[index];
             require(slider->isDoubleClickReturnEnabled(), "double-click reset missing");
             require(slider->getTextBoxWidth() > 0, "numeric field missing");
+            for (auto *child : slider->getChildren())
+                if (auto *label = dynamic_cast<juce::Label *>(child))
+                    require(label->getWidth() == readoutWidths[index] &&
+                                label->getHeight() == readoutHeights[index],
+                            "reference-styled numeric field geometry");
         }
         std::cout << "PASS compiled GUI slider attachments, keyboard, numeric fields, reset "
                      "configuration\n";
@@ -110,6 +121,24 @@ int main(int argc, char **argv)
                 if (auto *combo = dynamic_cast<juce::ComboBox *>(nested))
                     preset = combo;
         require(preset != nullptr, "preset selector");
+        juce::Label *presetLabel = nullptr;
+        for (auto *child : preset->getChildren())
+            if (auto *label = dynamic_cast<juce::Label *>(child))
+                presetLabel = label;
+        require(presetLabel != nullptr, "preset display label");
+        auto presetFont = preset->getLookAndFeel().getLabelFont(*presetLabel);
+        const float displayedHeight = presetFont.getHeight() * editor->getHeight() / 1000.f;
+        require(displayedHeight >= 13.f && displayedHeight <= 14.f,
+                "preset font at default displayed size");
+        require(preset->getLookAndFeel().getPopupMenuFont().getHeight() == presetFont.getHeight(),
+                "preset menu and display font consistency");
+        for (int i = 0; i < p.getNumPrograms(); ++i)
+            require(juce::GlyphArrangement::getStringWidth(presetFont, p.getProgramName(i)) <=
+                        presetLabel->getWidth() - presetLabel->getBorderSize().getLeftAndRight(),
+                    "factory preset name fits without compression or clipping");
+        require(preset->getRootMenu()->getNumItems() == p.getNumPrograms(),
+                "preset dropdown menu entries");
+        std::cout << "PASS preset font size, factory-name fit and menu font/entries\n";
         preset->setSelectedId(2, juce::sendNotificationSync);
         require(p.getCurrentProgram() == 1 && p.matchesCurrentPreset(), "preset selector callback");
         require(std::abs(p.parameters.get().input - 4.2f) < .06f &&
@@ -158,10 +187,40 @@ int main(int argc, char **argv)
         juce::Timer::callPendingTimersSynchronously();
         auto dir = juce::File(argv[1]);
         dir.createDirectory();
+        {
+            VoiceProcessor defaultView;
+            auto defaultEditor = ownEditor(defaultView);
+            defaultEditor->setVisible(true);
+            save(*defaultEditor, dir.getChildFile("gui-preset-default-960x617.png"));
+        }
+        // Capture a reference-matched factory-preset view with live, non-clipping meter data.
+        VoiceProcessor referenceView;
+        referenceView.setCurrentProgram(9); // Vocal Polish, as shown in newdesign.png
+        referenceView.prepareToPlay(48000, 256);
+        for (int k = 0; k < 150; ++k)
+        {
+            for (int c = 0; c < 2; ++c)
+                for (int i = 0; i < 256; ++i)
+                    b.setSample(c, i, .08f * std::sin(float(k * 256 + i) * .04f));
+            referenceView.processBlock(b, m);
+        }
+        auto referenceEditor = ownEditor(referenceView);
+        referenceEditor->setVisible(true);
+        require(referenceEditor->getWidth() == 960 && referenceEditor->getHeight() == 617,
+                "reference editor default size");
+        juce::Timer::callPendingTimersSynchronously();
+        save(*referenceEditor, dir.getChildFile("gui-960x617.png"));
+        referenceEditor->setSize(840, 540);
+        require(referenceEditor->getWidth() == 840 && referenceEditor->getHeight() == 540,
+                "compact editor size");
+        save(*referenceEditor, dir.getChildFile("gui-840x540.png"));
+        referenceEditor->setSize(1580, 1000);
+        save(*referenceEditor, dir.getChildFile("gui-reference-layout.png"));
+        referenceEditor.reset();
         save(*editor, dir.getChildFile("gui.png"));
-        editor->setSize(1120, 720);
-        save(*editor, dir.getChildFile("gui-80-percent.png"));
-        std::cout << "PASS compiled production editor snapshots at 100% and 80%\n";
+        editor->setSize(1200, 771);
+        save(*editor, dir.getChildFile("gui-large-1200x771.png"));
+        std::cout << "PASS compiled production editor snapshots at default, compact, and large sizes\n";
         editor.reset();
         std::atomic<int> callbackCount{0}, callbackErrors{0};
         std::jthread playing(
@@ -186,7 +245,7 @@ int main(int argc, char **argv)
         for (int repeat = 0; repeat < 20; ++repeat)
         {
             auto next = ownEditor(p);
-            next->setSize(repeat % 2 ? 1120 : 1750, repeat % 2 ? 720 : 1125);
+            next->setSize(repeat % 2 ? 840 : 1200, repeat % 2 ? 540 : 771);
             next->setVisible(true);
             auto image = next->createComponentSnapshot(next->getLocalBounds(), true, .25f);
             require(image.isValid(), "repeated editor snapshot");

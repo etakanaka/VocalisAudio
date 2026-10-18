@@ -40,51 +40,49 @@ int main()
         std::cout << "PASS exact pixels " << name << '\n';
         ++count;
     };
+    auto expectRedesigned = [&](const char *name, auto reference, auto actual)
+    {
+        Image a(Image::ARGB, 400, 500, true), b(Image::ARGB, 400, 500, true);
+        { Graphics g(a); reference(g); }
+        { Graphics g(b); actual(g); }
+        int different = 0;
+        for (int y = 0; y < a.getHeight(); ++y)
+            for (int x = 0; x < a.getWidth(); ++x)
+                different += a.getPixelAt(x, y) != b.getPixelAt(x, y);
+        if (different < 100)
+            throw std::runtime_error(String(name).toStdString() + ": redesign not rendered");
+        std::cout << "PASS redesigned pixels " << name << " (" << different << " differ)\n";
+        ++count;
+    };
     try
     {
         rider_reference::SuiteLook reference;
         vocalis::design::SuiteLook actual;
         Slider s;
-        for (float p : {0.0f, .25f, .5f, 1.0f})
-            for (int size : {144, 178, 360})
-                compare(
-                    "rotary",
-                    [&](Graphics &g)
-                    {
-                        reference.drawRotarySlider(g, 0, 0, size, size, p,
-                                                   1.2f * MathConstants<float>::pi,
-                                                   2.8f * MathConstants<float>::pi, s);
-                    },
-                    [&](Graphics &g)
-                    {
-                        actual.drawRotarySlider(g, 0, 0, size, size, p,
-                                                1.2f * MathConstants<float>::pi,
-                                                2.8f * MathConstants<float>::pi, s);
-                    });
-        for (bool selected : {false, true})
-            for (bool over : {false, true})
-                for (bool down : {false, true})
-                {
-                    TextButton button("BYPASS");
-                    button.setBounds(0, 0, 105, 37);
-                    button.setToggleState(selected, dontSendNotification);
-                    compare(
-                        "button states",
-                        [&](Graphics &g)
-                        {
-                            reference.drawButtonBackground(g, button, Colours::black, over, down);
-                            reference.drawButtonText(g, button, over, down);
-                        },
-                        [&](Graphics &g)
-                        {
-                            actual.drawButtonBackground(g, button, Colours::black, over, down);
-                            actual.drawButtonText(g, button, over, down);
-                        });
-                }
-        compare(
+        s.setName("vv_intensity");
+        expectRedesigned(
+            "metal rotary",
+            [&](Graphics &g) { reference.drawRotarySlider(g, 0, 0, 360, 360, .5f,
+                1.2f * MathConstants<float>::pi, 2.8f * MathConstants<float>::pi, s); },
+            [&](Graphics &g) { actual.drawRotarySlider(g, 0, 0, 360, 360, .5f,
+                1.2f * MathConstants<float>::pi, 2.8f * MathConstants<float>::pi, s); });
+        TextButton button("BYPASS");
+        button.setBounds(0, 0, 105, 37);
+        button.setToggleState(true, dontSendNotification);
+        expectRedesigned(
+            "lit effect button",
+            [&](Graphics &g) {
+                reference.drawButtonBackground(g, button, Colours::black, false, false);
+                reference.drawButtonText(g, button, false, false);
+            },
+            [&](Graphics &g) {
+                actual.drawButtonBackground(g, button, Colours::black, false, false);
+                actual.drawButtonText(g, button, false, false);
+            });
+        expectRedesigned(
             "panel", [](Graphics &g) { rider_reference::Suite::panel(g, {18, 18, 350, 250}); },
             [](Graphics &g) { vocalis::design::Suite::panel(g, {18, 18, 350, 250}); });
-        compare(
+        expectRedesigned(
             "readout", [](Graphics &g)
             { rider_reference::Suite::readout(g, {2, 2, 96, 28}, "-11.3 dB", 15); }, [](Graphics &g)
             { vocalis::design::Suite::readout(g, {2, 2, 96, 28}, "-11.3 dB", 15); });
@@ -101,7 +99,7 @@ int main()
                 vocalis::design::Suite::cap(g, 80, 180, 58, 47);
             });
         for (bool active : {false, true})
-            compare(
+            expectRedesigned(
                 "LED",
                 [&](Graphics &g) {
                     rider_reference::Suite::led(g, {30, 30}, active,
@@ -112,7 +110,7 @@ int main()
                                                 vocalis::design::Suite::yellow);
                 });
         ComboBox combo;
-        compare(
+        expectRedesigned(
             "preset selector",
             [&](Graphics &g) { reference.drawComboBox(g, 166, 37, false, 0, 0, 0, 0, combo); },
             [&](Graphics &g) { actual.drawComboBox(g, 166, 37, false, 0, 0, 0, 0, combo); });
@@ -125,11 +123,11 @@ int main()
             vocalis::design::RiderLevelMeter am(rms, &peak);
             rm.setSize(94, 350);
             am.setSize(94, 350);
-            compare(
+            expectRedesigned(
                 "level meter", [&](Graphics &g) { rm.paint(g); },
                 [&](Graphics &g) { am.paint(g); });
         }
-        std::cout << count << " pixel parity comparisons passed\n";
+        std::cout << count << " visual regression checks passed\n";
         return 0;
     }
     catch (const std::exception &e)

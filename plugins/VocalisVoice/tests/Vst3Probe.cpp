@@ -155,6 +155,8 @@ int main(int argc, char **argv)
         {
             auto editor = ownEditor(*instance);
             require(editor != nullptr, "no editor");
+            require(editor->getWidth() == 960 && editor->getHeight() == 617,
+                    "VST3 editor did not report compact default size");
             juce::Component window;
             window.setOpaque(true);
             window.setBounds(40, 40, editor->getWidth(), editor->getHeight());
@@ -163,6 +165,8 @@ int main(int argc, char **argv)
             window.addToDesktop(0);
             window.setVisible(true);
             juce::MessageManager::getInstance()->runDispatchLoopUntil(500);
+            require(window.getWidth() == 960 && window.getHeight() == 617,
+                    "native host window does not match editor bounds");
             auto image = captureX11(window.getPeer()->getNativeHandle(), window.getWidth(),
                                     window.getHeight());
             require(image.isValid(), "native GUI capture");
@@ -175,17 +179,27 @@ int main(int argc, char **argv)
             stream.reset();
             std::cout << "PASS Actual loaded VST3 editor screenshot " << target.getFullPathName()
                       << '\n';
-            // Resize the real editor and repaint to exercise component layout at minimum scale.
-            window.setSize(1120, 720);
+            // Resize the real editor and repaint at the optional minimum and a larger size.
+            window.setSize(840, 540);
             editor->setBounds(window.getLocalBounds());
             juce::MessageManager::getInstance()->runDispatchLoopUntil(300);
             auto small = captureX11(window.getPeer()->getNativeHandle(), window.getWidth(),
                                     window.getHeight());
-            auto smallFile = target.getSiblingFile("gui-80-percent.png");
+            auto smallFile = target.getSiblingFile("gui-840x540.png");
             smallFile.deleteFile();
             auto smallStream = smallFile.createOutputStream();
             require(smallStream && png.writeImageToStream(small, *smallStream),
                     "scaled screenshot");
+            window.setSize(1200, 771);
+            editor->setBounds(window.getLocalBounds());
+            juce::MessageManager::getInstance()->runDispatchLoopUntil(300);
+            auto large = captureX11(window.getPeer()->getNativeHandle(), window.getWidth(),
+                                    window.getHeight());
+            auto largeFile = target.getSiblingFile("gui-large-1200x771.png");
+            largeFile.deleteFile();
+            auto largeStream = largeFile.createOutputStream();
+            require(largeStream && png.writeImageToStream(large, *largeStream),
+                    "large screenshot");
             window.setVisible(false);
             editor.reset();
             window.removeFromDesktop();

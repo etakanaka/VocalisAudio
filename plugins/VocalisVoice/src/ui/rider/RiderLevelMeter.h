@@ -17,15 +17,56 @@ class RiderLevelMeter final : public Component
 {
     const std::atomic<float> &rms;
     const std::atomic<float> *peak;
+    bool drawScale = true;
 
   public:
-    RiderLevelMeter(const std::atomic<float> &value, const std::atomic<float> *peakValue = nullptr)
-        : rms(value), peak(peakValue)
+    RiderLevelMeter(const std::atomic<float> &value, const std::atomic<float> *peakValue = nullptr,
+                    bool showScale = true)
+        : rms(value), peak(peakValue), drawScale(showScale)
     {
         setInterceptsMouseClicks(false, false);
     }
     void paint(Graphics &g) override
     {
+        if (!drawScale)
+        {
+            constexpr int segments = 26;
+            constexpr float segmentHeight = 12.f, gap = 3.f;
+            auto cx = float(getWidth()) * .53f;
+            auto bar = Rectangle<float>(cx - 17.f, 10.f, 34.f,
+                                        segments * segmentHeight + (segments - 1) * gap);
+            g.setColour(Colour(0xff020810));
+            g.fillRect(bar.expanded(3, 2));
+            g.setGradientFill(ColourGradient(Colour(0xffadb8bf), bar.getTopLeft(),
+                                             Colour(0xff36444d), bar.getTopRight(), false));
+            g.drawRect(bar.expanded(1, 1), 1.f);
+            auto active = jlimit(0, segments,
+                                 int(std::round((jlimit(-60.f, 0.f, rms.load()) + 60.f) / 60.f * segments)));
+            for (int i = 0; i < segments; ++i)
+            {
+                Colour led = i >= 24 ? Colour(0xffff501b)
+                             : i >= 21 ? Colour(0xffffc51e)
+                             : i >= 17 ? Colour(0xffc4ff24)
+                                       : Colour(0xff60f522);
+                auto y = bar.getBottom() - segmentHeight - float(i) * (segmentHeight + gap);
+                auto r = Rectangle<float>(bar.getX() + 3, y, bar.getWidth() - 6, segmentHeight);
+                g.setColour(i < active ? led : led.withMultipliedBrightness(.12f).withAlpha(.55f));
+                g.fillRect(r);
+                if (i < active)
+                {
+                    g.setColour(Colours::white.withAlpha(.18f));
+                    g.drawHorizontalLine(int(y + 1), r.getX() + 1, r.getRight() - 1);
+                }
+            }
+            if (peak)
+            {
+                auto p = jlimit(0.f, 1.f, (peak->load() + 60.f) / 60.f);
+                auto y = bar.getBottom() - p * bar.getHeight();
+                g.setColour(Colours::white);
+                g.drawLine(bar.getX() - 2, y, bar.getRight() + 2, y, 1.5f);
+            }
+            return;
+        }
         auto top = 16.f, bottom = float(getHeight() - 60), cx = float(getWidth()) * .53f;
         auto r = Rectangle<float>(cx - 9, top, 18, bottom - top);
         g.setColour(Colour(0xff070d18));

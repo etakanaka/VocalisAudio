@@ -1,5 +1,7 @@
 # Voice current limitations and acceptance gaps
 
+Approved GUI size is 960 x 617, with fixed-ratio resizing and Settings choices at 840 x 540 and 1200 x 771. The size path is covered by compiled offscreen tests. The native GUI and REAPER host checks listed below remain unverified; no manual REAPER compatibility claim is made.
+
 No known critical/high defect remains from this audit's reproduced cases. This is a scope-limited finding, not proof of universal correctness.
 
 * **BLOCKED — installation:** ~/.vst3 is read-only in this execution session. The installer identifies the existing unmarked Voice bundle correctly but cannot create a staging directory. Run scripts/install.sh in a normal terminal. Staged install, backups, uninstall, protection and binary hashes pass. No installed plugin was changed.

@@ -26,6 +26,7 @@ class VoiceEditor : public juce::AudioProcessorEditor, private juce::Timer
   private:
     VoiceProcessor &processor;
     voiceui::LookAndFeel look;
+    voiceui::LookAndFeel presetLook{true};
     juce::Component surface;
     voiceui::AboutPanel aboutPanel;
     IntensityKnob intensity;
